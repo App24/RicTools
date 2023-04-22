@@ -18,9 +18,25 @@ namespace RicUtils.Editor
 
             string s = "using RicUtils;\n\n";
 
-            s += "public class " + className + " : AvailableScriptableObject<" + mono.GetClass().Name + ">\n{\n";
+            string @namespace = mono.GetClass().Namespace;
 
-            s += "}\n";
+            int indentation = 0;
+
+            if (!string.IsNullOrEmpty(@namespace))
+            {
+                s += AddIndentation("namespace " + @namespace + "\n{\n", indentation);
+                indentation++;
+            }
+
+            s += AddIndentation("public class " + className + " : AvailableScriptableObject<" + mono.GetClass().Name + ">\n", indentation);
+            s += AddIndentation("{\n", indentation);
+            indentation++;
+
+            while(indentation > 0)
+            {
+                indentation--;
+                s += AddIndentation("}\n", indentation);
+            }
 
             var path = "";
             var obj = Selection.activeObject;
@@ -35,6 +51,16 @@ namespace RicUtils.Editor
             }
 
             AssetDatabase.Refresh();
+        }
+
+        private static string AddIndentation(string toAdd, int indentation)
+        {
+            var text = "";
+            for (int i = 0; i < indentation; i++)
+            {
+                text += "\t";
+            }
+            return text + toAdd;
         }
 
         [MenuItem("Assets/Create Available Scriptable Object", true)]
