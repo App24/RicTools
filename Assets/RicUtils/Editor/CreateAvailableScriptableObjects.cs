@@ -12,15 +12,15 @@ namespace RicUtils.Editor
         {
             foreach (var keyValuePair in ToolUtilities.GetScriptableEditors())
             {
-                var path = RicUtilities.GetAvailableScriptableObjectPath(keyValuePair.Value.Item1);
+                var path = RicUtilities.GetAvailableScriptableObjectPath(keyValuePair.AvailableScriptableObjectType);
                 RicUtilities.CreateAssetFolder(path);
 
-                var available = AssetDatabase.LoadAssetAtPath(path, keyValuePair.Value.Item1);
+                var available = AssetDatabase.LoadAssetAtPath(path, keyValuePair.AvailableScriptableObjectType);
                 if (available == null)
                 {
-                    available = ScriptableObject.CreateInstance(keyValuePair.Value.Item1);
-                    var items = (IList)System.Activator.CreateInstance(typeof(List<>).MakeGenericType(keyValuePair.Key));
-                    keyValuePair.Value.Item1.GetMethod("SetItems").Invoke(available, new object[] { items });
+                    available = ScriptableObject.CreateInstance(keyValuePair.AvailableScriptableObjectType);
+                    var items = (IList)System.Activator.CreateInstance(typeof(List<>).MakeGenericType(keyValuePair.CustomScriptableObjectType));
+                    keyValuePair.AvailableScriptableObjectType.GetMethod("SetItems").Invoke(available, new object[] { items });
 
                     AssetDatabase.CreateAsset(available, path);
 

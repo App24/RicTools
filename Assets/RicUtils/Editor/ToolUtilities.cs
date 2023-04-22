@@ -32,14 +32,14 @@ namespace RicUtils.Editor
 
         public static bool HasCustomEditor(System.Type type)
         {
-            return GetScriptableEditors().Exists(se => se.IsSameKeyType(type));
+            return GetScriptableEditors().Exists(se => se.HasCustomEditor(type));
         }
 
         public static System.Type GetCustomEditorType(System.Type type)
         {
             foreach (var keyValuePair in GetScriptableEditors())
             {
-                if (keyValuePair.IsSameKeyType(type)) return keyValuePair.Value.Item2;
+                if (keyValuePair.HasCustomEditor(type)) return keyValuePair.EditorType;
             }
             return null;
         }
@@ -48,7 +48,7 @@ namespace RicUtils.Editor
         {
             foreach (var keyValuePair in GetScriptableEditors())
             {
-                if (keyValuePair.IsSameKeyType(type)) return keyValuePair.Value.Item1;
+                if (keyValuePair.HasAvailableScriptableObject(type)) return keyValuePair.AvailableScriptableObjectType;
             }
             return null;
         }
@@ -68,13 +68,19 @@ namespace RicUtils.Editor
         {
             foreach (var keyValuePair in GetScriptableEditors())
             {
-                if (keyValuePair.IsSameKeyType(so.GetType()))
+                if (keyValuePair.HasCustomEditor(so.GetType()))
                 {
                     //var actualSo = System.Convert.ChangeType(so, keyValuePair.Key);
-                    var temp = keyValuePair.Value.Item2.GetMethod("ShowWindow", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static).Invoke(null, null);
-                    var data = System.Convert.ChangeType(temp, keyValuePair.Value.Item2);
-                    keyValuePair.Value.Item2.GetField("scriptableObject").SetValue(data, so);
-                    keyValuePair.Value.Item2.GetMethod("LoadScriptableObject").Invoke(data, new object[] { so, so == null });
+                    var showWindow = keyValuePair.EditorType.GetMethod("ShowWindow", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+                    if(showWindow == null)
+                    {
+                        Debug.LogError(keyValuePair.EditorType + " has no ShowWindow static function");
+                        return false;
+                    }
+                    var temp = showWindow.Invoke(null, null);
+                    var data = System.Convert.ChangeType(temp, keyValuePair.EditorType);
+                    keyValuePair.EditorType.GetField("scriptableObject").SetValue(data, so);
+                    keyValuePair.EditorType.GetMethod("LoadScriptableObject").Invoke(data, new object[] { so, so == null });
                     return true;
                 }
             }

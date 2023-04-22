@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace RicUtils.Editor
 {
-    public abstract class GenericEditorWindow<T, D> : EditorWindow where T : CustomScriptableObject where D : AvailableScriptObject<T>
+    public abstract class GenericEditorWindow<T, D> : EditorWindow where T : CustomScriptableObject where D : AvailableScriptableObject<T>
     {
         public T scriptableObject;
 
@@ -19,7 +19,7 @@ namespace RicUtils.Editor
         protected SerializedObject serializedObject;
         private Dictionary<string, (SerializedProperty, object)> data = new Dictionary<string, (SerializedProperty, object)>();
 
-        protected virtual void OnGUI()
+        private void OnGUI()
         {
             EditorUtilities.DrawObjectField(ref scriptableObject, "Scriptable Object", () =>
             {
@@ -27,16 +27,17 @@ namespace RicUtils.Editor
             });
 
             DrawIDInput(ref spawnableId);
+
+            DrawGUI();
+
+            DrawSaveDeleteButtons();
         }
+
+        protected abstract void DrawGUI();
 
         protected virtual void OnEnable()
         {
             serializedObject = new SerializedObject(this);
-        }
-
-        protected void DrawLabel(string text)
-        {
-            EditorGUILayout.LabelField(text, GUILayout.MaxWidth(125));
         }
 
         protected void DrawIDInput(ref string id)
@@ -46,7 +47,7 @@ namespace RicUtils.Editor
             GUI.enabled = true;
         }
 
-        protected void DrawSaveDeleteButtons(bool checkOverride = true)
+        protected void DrawSaveDeleteButtons(bool checkExists = true)
         {
             EditorUtilities.DrawSeparator();
             List<CompleteCriteria> criteria = new List<CompleteCriteria>(GetInbuiltCompleteCriteria());
@@ -73,7 +74,7 @@ namespace RicUtils.Editor
 
                 if (AssetDatabase.FindAssets($"{spawnableId}", new string[] { SavePath }).Length > 0)
                 {
-                    if (checkOverride)
+                    if (checkExists)
                     {
                         if (!EditorUtility.DisplayDialog("Error", "There is an asset by that ID already, you sure you want to replace it?", "Continue", "Cancel"))
                             return;

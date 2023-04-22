@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace RicUtils
 {
-    public class AvailableScriptObject<T> : ScriptableObject where T : CustomScriptableObject
+    public class AvailableScriptableObject<T> : ScriptableObject where T : CustomScriptableObject
     {
         public T[] items;
 
