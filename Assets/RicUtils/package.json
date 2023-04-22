@@ -1,0 +1,27 @@
+{
+  "name": "io.github.app24.ricutils",
+  "version": "1.0.2",
+  "displayName": "RicUtils",
+  "dependencies": {
+    "com.solidalloy.type-references": "2.16.0"
+  },
+  "keywords": [
+  ],
+  "author": {
+    "name": "Ricardo Xavier",
+    "email": "",
+    "url": ""
+  },
+  "type": "tool",
+  "scopedRegistries": [
+    {
+      "name": "package.openupm.com",
+      "url": "https://package.openupm.com",
+      "scopes": [
+        "com.openupm",
+        "com.solidalloy",
+        "org.nuget"
+      ]
+    }
+  ]
+}
