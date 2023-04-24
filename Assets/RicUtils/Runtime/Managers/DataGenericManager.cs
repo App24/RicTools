@@ -4,17 +4,8 @@ using UnityEngine;
 
 namespace RicUtils.Managers
 {
-    public abstract class DataGenericManager<T> : GenericManager<T> where T : DataGenericManager<T>
+    public abstract class DataGenericManager<T, D> : SingletonGenericManager<T> where T : DataGenericManager<T, D> where D : DataManagerScriptableObject
     {
-        protected virtual bool DontDestroyGameObjectOnLoad => true;
-        protected override bool DestroyIfFound => DontDestroyGameObjectOnLoad;
-
-        private void Awake()
-        {
-            SetInstance();
-            if (DontDestroyGameObjectOnLoad)
-                DontDestroyOnLoad(gameObject);
-            OnCreation();
-        }
+        public D data;
     }
 }

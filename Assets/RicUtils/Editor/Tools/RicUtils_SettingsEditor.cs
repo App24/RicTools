@@ -1,6 +1,8 @@
+using RicUtils.Managers;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEditor.VersionControl;
 using UnityEditorInternal;
 using UnityEngine;
 
@@ -95,6 +97,16 @@ namespace RicUtils.Editor
                 EditorGUI.LabelField(rect, Styles.scriptableEditorsListLabel);
             };
 
+            m_singletonManagersList.elementHeightCallback = index =>
+            {
+                var manager = settings.m_singletonManagers[index].manager.Type;
+                if (RicUtilities.IsSubclassOfRawGeneric(typeof(DataGenericManager<,>), manager))
+                {
+                    return 42;
+                }
+                return 21;
+            };
+
             m_singletonManagersList.drawElementCallback = (rect, index, isActive, isFocused) =>
             {
                 var element = m_singletonManagersList.serializedProperty.GetArrayElementAtIndex(index);
@@ -105,6 +117,35 @@ namespace RicUtils.Editor
                 EditorGUI.LabelField(new Rect(rect.x, rect.y, labelWidth, EditorGUIUtility.singleLineHeight), "Manager");
                 //rect.x += 110;
                 EditorGUI.PropertyField(new Rect(rect.x + labelWidth, rect.y, width, EditorGUIUtility.singleLineHeight), element.FindPropertyRelative("manager"), GUIContent.none);
+
+                var manager = settings.m_singletonManagers[index].manager.Type;
+                if (RicUtilities.IsSubclassOfRawGeneric(typeof(DataGenericManager<,>), manager))
+                {
+                    rect.y += EditorGUIUtility.singleLineHeight + 2;
+                    EditorGUI.LabelField(new Rect(rect.x, rect.y, labelWidth, EditorGUIUtility.singleLineHeight), "Data");
+                    GUI.enabled = settings.m_singletonManagers[index].data == null;
+                    if (settings.m_singletonManagers[index].data == null)
+                    {
+                        if (GUI.Button(new Rect(rect.x + labelWidth, rect.y, width, EditorGUIUtility.singleLineHeight), "Create"))
+                        {
+                            RicUtilities.CreateAssetFolder("Assets/ScriptableObject/Managers Data");
+
+                            var data = ScriptableObject.CreateInstance(manager.BaseType.GenericTypeArguments[1]);
+                            if (!AssetDatabase.Contains(data))
+                                AssetDatabase.CreateAsset(data, $"Assets/ScriptableObject/Managers Data/{manager.Name}_data.asset");
+
+                            settings.m_singletonManagers[index].data = data as DataManagerScriptableObject;
+
+                            EditorUtility.SetDirty(settings);
+                            AssetDatabase.SaveAssets();
+                        }
+                    }
+                    else
+                    {
+                        EditorGUI.PropertyField(new Rect(rect.x + labelWidth, rect.y, width, EditorGUIUtility.singleLineHeight), element.FindPropertyRelative("data"), GUIContent.none);
+                    }
+                    GUI.enabled = true;
+                }
             };
 
             m_singletonManagersList.drawHeaderCallback = rect =>
@@ -166,97 +207,4 @@ namespace RicUtils.Editor
             }
         }
     }
-    /*[CustomEditor(typeof(RicUtils_Settings))]
-    public class RicUtils_SettingsEditor : UnityEditor.Editor
-    {
-        internal class Styles
-        {
-            public static readonly GUIContent scriptableEditorsLabel = new GUIContent("Scriptable Editors");
-            public static readonly GUIContent scriptableEditorsListLabel = new GUIContent("Scriptable Editors List");
-
-            public static readonly GUIContent scriptableEditorsAddButtonLabel = new GUIContent("Add Scriptable Editor");
-        }
-
-        private ReorderableList m_List;
-
-        private const string k_UndoRedo = "UndoRedoPerformed";
-
-        private const string SCRIPTABLE_EDITORS_PATH = "Assets/RicUtils/Editor/Resources/ScriptableEditors";
-
-        public void OnEnable()
-        {
-            if (target == null)
-                return;
-
-            m_List = new ReorderableList(serializedObject, serializedObject.FindProperty("m_scriptableEditors"), false, true, true, true);
-
-            m_List.drawElementCallback = (rect, index, isActive, isFocused) =>
-            {
-                var element = m_List.serializedProperty.GetArrayElementAtIndex(index);
-                rect.y += 2;
-                float width = 130;
-
-                EditorGUI.PropertyField(new Rect(rect.x, rect.y, width, EditorGUIUtility.singleLineHeight), element.FindPropertyRelative("customScriptableObjectType"), GUIContent.none);
-                EditorGUI.PropertyField(new Rect(rect.x + width + 5, rect.y, width, EditorGUIUtility.singleLineHeight), element.FindPropertyRelative("editorType"), GUIContent.none);
-                EditorGUI.PropertyField(new Rect(rect.x + ((width + 5) * 2), rect.y, width, EditorGUIUtility.singleLineHeight), element.FindPropertyRelative("availableScriptableObjectType"), GUIContent.none);
-
-                /*var temp = element.objectReferenceValue as ScriptableEditor;
-
-                if (!temp)
-                {
-                    EditorGUI.PropertyField(new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight), element, GUIContent.none);
-                    return;
-                }
-
-                if (temp.serializedObject == null) temp.serializedObject = new SerializedObject(temp);
-
-                EditorGUI.PropertyField(new Rect(rect.x, rect.y, width, EditorGUIUtility.singleLineHeight), temp.serializedObject.FindProperty("customScriptableObjectType"), GUIContent.none);
-                EditorGUI.PropertyField(new Rect(rect.x + width + 5, rect.y, width, EditorGUIUtility.singleLineHeight), temp.serializedObject.FindProperty("editorType"), GUIContent.none);
-                EditorGUI.PropertyField(new Rect(rect.x + ((width + 5) * 2), rect.y, width, EditorGUIUtility.singleLineHeight), temp.serializedObject.FindProperty("availableScriptableObjectType"), GUIContent.none);
-                EditorGUI.PropertyField(new Rect(rect.x + ((width + 8) * 3), rect.y, 6, EditorGUIUtility.singleLineHeight), element, GUIContent.none);
-
-                temp.serializedObject.ApplyModifiedProperties();
-            };
-
-            m_List.drawHeaderCallback = rect =>
-            {
-                EditorGUI.LabelField(rect, Styles.scriptableEditorsListLabel);
-            };
-        }
-
-        public override void OnInspectorGUI()
-        {
-            serializedObject.Update();
-            string evt_cmd = Event.current.commandName;
-
-            float labelWidth = EditorGUIUtility.labelWidth;
-            float fieldWidth = EditorGUIUtility.fieldWidth;
-            EditorGUI.indentLevel = 0;
-
-            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-            GUILayout.Label(Styles.scriptableEditorsLabel, EditorStyles.boldLabel);
-            m_List.DoLayoutList();
-
-            EditorGUI.indentLevel = 0;
-
-            EditorGUILayout.Space();
-            EditorGUILayout.EndVertical();
-
-            /*EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-            if (GUILayout.Button(Styles.scriptableEditorsAddButtonLabel))
-            {
-                var old = new List<ScriptableEditor>((target as RicUtils_Settings).m_scriptableEditors);
-                old.Add(new ScriptableEditor());
-                (target as RicUtils_Settings).m_scriptableEditors = old.ToArray();
-                AssetDatabase.SaveAssets();
-            }
-            EditorGUILayout.EndVertical();
-
-            if (serializedObject.ApplyModifiedProperties() || evt_cmd == k_UndoRedo)
-            {
-                EditorUtility.SetDirty(target);
-                //TMPro_EventManager.ON_TMP_SETTINGS_CHANGED();
-            }
-        }
-    }*/
 }

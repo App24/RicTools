@@ -12,6 +12,8 @@ namespace RicUtils.Editor
         {
             foreach (var keyValuePair in ToolUtilities.GetScriptableEditors())
             {
+                if (!keyValuePair.IsValid()) continue;
+                if (keyValuePair.AvailableScriptableObjectType == null) continue;
                 var path = RicUtilities.GetAvailableScriptableObjectPath(keyValuePair.AvailableScriptableObjectType);
                 RicUtilities.CreateAssetFolder(path);
 

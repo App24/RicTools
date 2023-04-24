@@ -38,6 +38,21 @@ namespace RicUtils
             return Regex.Replace(PascalString, "(?!^)([A-Z])", " $1");
         }
 
+        // https://stackoverflow.com/questions/457676/check-if-a-class-is-derived-from-a-generic-class
+        public static bool IsSubclassOfRawGeneric(System.Type generic, System.Type toCheck)
+        {
+            while (toCheck != null && toCheck != typeof(object))
+            {
+                var cur = toCheck.IsGenericType ? toCheck.GetGenericTypeDefinition() : toCheck;
+                if (generic == cur)
+                {
+                    return true;
+                }
+                toCheck = toCheck.BaseType;
+            }
+            return false;
+        }
+
 #if UNITY_EDITOR
         public static void CreateAssetFolder(string folderPath)
         {

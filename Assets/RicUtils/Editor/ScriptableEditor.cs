@@ -23,6 +23,11 @@ namespace RicUtils.Editor
 
         public System.Type AvailableScriptableObjectType => availableScriptableObjectType;
 
+        public bool IsValid()
+        {
+            return (CustomScriptableObjectType != null);
+        }
+
         public bool IsSameKeyType(System.Type type)
         {
             if (type == null || CustomScriptableObjectType == null) return false;

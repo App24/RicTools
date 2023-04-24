@@ -10,7 +10,9 @@ namespace RicUtils
     [System.Serializable]
     public class SingletonManager
     {
-        [Inherits(typeof(GenericManager<>), ShortName = true, AllowAbstract = false, IncludeBaseType = false, ShowAllTypes = true)]
+        [Inherits(typeof(SingletonGenericManager<>), ShortName = true, AllowAbstract = false, IncludeBaseType = false, ShowAllTypes = true)]
         public TypeReference manager;
+
+        public DataManagerScriptableObject data;
     }
 }

@@ -12,29 +12,20 @@ namespace RicUtils.Managers
 
         protected virtual bool DestroyIfFound => true;
 
-        internal static void CreateManager()
+        protected virtual void Awake()
         {
-            var gameObject = new GameObject();
-            gameObject.name = $"{typeof(T)} Manager";
-            var comp = gameObject.AddComponent<T>();
-            comp.SetInstance();
-            DontDestroyOnLoad(gameObject);
-            comp.OnCreation();
+            SetInstance();
         }
 
-        protected virtual void OnCreation()
+        protected bool SetInstance()
         {
-
-        }
-
-        protected void SetInstance()
-        {
-            if (_instance != null && DestroyIfFound)
+            if (_instance != null && DestroyIfFound && _instance != this)
             {
                 Destroy(this);
-                return;
+                return false;
             }
             _instance = this as T;
+            return true;
         }
     }
 }

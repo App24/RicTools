@@ -20,7 +20,7 @@ namespace RicUtils.Editor
                 var mono = obj as MonoScript;
                 var @class = mono.GetClass();
                 if (@class.IsSubclassOf(typeof(GenericScriptableObject))) scriptableObject = @class.Name;
-                else if (IsSubclassOfRawGeneric(typeof(AvailableScriptableObject<>), @class)) availableScriptableObject = @class.Name;
+                else if (RicUtilities.IsSubclassOfRawGeneric(typeof(AvailableScriptableObject<>), @class)) availableScriptableObject = @class.Name;
             }
 
             string className = $"{scriptableObject}EditorWindow";
@@ -54,25 +54,10 @@ namespace RicUtils.Editor
                 var @class = mono.GetClass();
                 if (mono.GetClass() == null) continue;
                 if (@class.IsSubclassOf(typeof(GenericScriptableObject))) hasGenericScriptableObject = true;
-                else if (IsSubclassOfRawGeneric(typeof(AvailableScriptableObject<>), @class)) hasAvailableScriptableObject = true;
+                else if (RicUtilities.IsSubclassOfRawGeneric(typeof(AvailableScriptableObject<>), @class)) hasAvailableScriptableObject = true;
             }
 
             return hasGenericScriptableObject && hasAvailableScriptableObject;
-        }
-
-        // https://stackoverflow.com/questions/457676/check-if-a-class-is-derived-from-a-generic-class
-        private static bool IsSubclassOfRawGeneric(System.Type generic, System.Type toCheck)
-        {
-            while (toCheck != null && toCheck != typeof(object))
-            {
-                var cur = toCheck.IsGenericType ? toCheck.GetGenericTypeDefinition() : toCheck;
-                if (generic == cur)
-                {
-                    return true;
-                }
-                toCheck = toCheck.BaseType;
-            }
-            return false;
         }
     }
 
