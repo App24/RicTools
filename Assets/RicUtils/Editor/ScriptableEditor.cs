@@ -1,13 +1,13 @@
 ﻿using TypeReferences;
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 namespace RicUtils.Editor
 {
     [System.Serializable]
     public class ScriptableEditor
     {
-        [Inherits(typeof(CustomScriptableObject), ShortName = true, AllowAbstract = false, IncludeBaseType = false, ShowAllTypes = true)]
+        [Inherits(typeof(GenericScriptableObject), ShortName = true, AllowAbstract = false, IncludeBaseType = false, ShowAllTypes = true)]
         public TypeReference customScriptableObjectType;
 
         [Inherits(typeof(GenericEditorWindow<,>), ShortName = true, AllowAbstract = false, IncludeBaseType = false, ShowAllTypes = true)]
@@ -25,7 +25,7 @@ namespace RicUtils.Editor
 
         public bool IsSameKeyType(System.Type type)
         {
-            if(type == null || CustomScriptableObjectType == null) return false;
+            if (type == null || CustomScriptableObjectType == null) return false;
             return type == CustomScriptableObjectType || type.IsSubclassOf(CustomScriptableObjectType);
         }
 

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace RicUtils.Editor
 {
-    [CustomEditor(typeof(CustomScriptableObject), true)]
+    [CustomEditor(typeof(GenericScriptableObject), true)]
     [CanEditMultipleObjects]
     public class CustomScriptableObjectCustomEditor : UnityEditor.Editor
     {
@@ -14,7 +14,7 @@ namespace RicUtils.Editor
             if (ToolUtilities.HasCustomEditor(target.GetType()))
             {
                 GUI.enabled = false;
-                EditorGUILayout.ObjectField("Script", MonoScript.FromScriptableObject((CustomScriptableObject)target), typeof(CustomScriptableObject), false);
+                EditorGUILayout.ObjectField("Script", MonoScript.FromScriptableObject((GenericScriptableObject)target), typeof(GenericScriptableObject), false);
                 GUI.enabled = true;
 
                 EditorGUILayout.BeginHorizontal();

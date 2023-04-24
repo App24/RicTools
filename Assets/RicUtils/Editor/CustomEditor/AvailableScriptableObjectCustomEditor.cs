@@ -16,7 +16,7 @@ namespace RicUtils.Editor
             var availableScriptableObjectType = target.GetType();
             var availableScriptableObject = target;
             var itemsField = availableScriptableObjectType.GetField("items");
-            var itemsArray = (CustomScriptableObject[])itemsField.GetValue(availableScriptableObject);
+            var itemsArray = (GenericScriptableObject[])itemsField.GetValue(availableScriptableObject);
 
             GUI.enabled = false;
             EditorGUILayout.ObjectField("Script", MonoScript.FromScriptableObject((ScriptableObject)target), typeof(AvailableScriptableObject<>), false);

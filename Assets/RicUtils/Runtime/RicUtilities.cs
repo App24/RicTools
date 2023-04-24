@@ -9,7 +9,7 @@ namespace RicUtils
 {
     public static class RicUtilities
     {
-        public static T GetAvailableScriptableObject<T, D>() where T : AvailableScriptableObject<D> where D : CustomScriptableObject
+        public static T GetAvailableScriptableObject<T, D>() where T : AvailableScriptableObject<D> where D : GenericScriptableObject
         {
             return Resources.Load<T>("Availables/" + GetAvailableScriptableObjectName(typeof(T)));
         }

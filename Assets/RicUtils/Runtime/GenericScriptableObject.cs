@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace RicUtils
 {
-    public class CustomScriptableObject : ScriptableObject
+    public class GenericScriptableObject : ScriptableObject
     {
         public string id;
     }

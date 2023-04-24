@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace RicUtils.Editor
 {
-    public abstract class GenericEditorWindow<T, D> : EditorWindow where T : CustomScriptableObject where D : AvailableScriptableObject<T>
+    public abstract class GenericEditorWindow<T, D> : EditorWindow where T : GenericScriptableObject where D : AvailableScriptableObject<T>
     {
         public T scriptableObject;
 

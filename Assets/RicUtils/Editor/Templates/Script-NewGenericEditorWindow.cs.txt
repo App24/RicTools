@@ -1,0 +1,25 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using RicUtils;
+using RicUtils.Editor;
+
+    #ROOTNAMESPACEBEGIN#
+public class #SCRIPTNAME# : GenericEditorWindow<#SCRIPTABLEOBJECT#, #AVAILABLESCRIPTABLEOBJECT#>
+{
+	public static #SCRIPTNAME# ShowWindow()
+    {
+        return GetWindow<#SCRIPTNAME#>();
+    }
+
+    protected override void CreateAsset(ref #SCRIPTABLEOBJECT# asset)
+    {
+
+    }
+
+    protected override void DrawGUI()
+    {
+
+    }
+}
+#ROOTNAMESPACEEND#

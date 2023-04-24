@@ -18,8 +18,8 @@ namespace RicUtils.Editor
             public static readonly GUIContent scriptableEditorsAddButtonLabel = new GUIContent("Add Scriptable Editor");
         }
 
-        RicUtils_EditorSettings editorSettings;
-        RicUtils_Settings settings;
+        private RicUtils_EditorSettings editorSettings;
+        private RicUtils_Settings settings;
 
         private ReorderableList m_scriptableEditorsList;
         private ReorderableList m_singletonManagersList;
@@ -35,7 +35,7 @@ namespace RicUtils.Editor
             return GetWindow<RicUtils_SettingsEditor>("RicUtils Settings");
         }
 
-        void OnEnable()
+        private void OnEnable()
         {
             editorSettings = RicUtils_EditorSettings.instance;
             settings = RicUtils_Settings.instance;
@@ -113,7 +113,7 @@ namespace RicUtils.Editor
             };
         }
 
-        void OnGUI()
+        private void OnGUI()
         {
             editorSerializedObject.Update();
             serializedObject.Update();

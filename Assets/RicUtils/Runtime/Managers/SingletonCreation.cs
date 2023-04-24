@@ -10,7 +10,7 @@ namespace RicUtils.Managers
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void OnLoad()
         {
-            foreach(var manager in RicUtils_Settings.singletonManagers)
+            foreach (var manager in RicUtils_Settings.singletonManagers)
             {
                 var type = manager.manager.Type;
                 var method = type.GetMethod("CreateManager", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod | BindingFlags.FlattenHierarchy);

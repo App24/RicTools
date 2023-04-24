@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace RicUtils
 {
-    public class AvailableScriptableObject<T> : ScriptableObject where T : CustomScriptableObject
+    public class AvailableScriptableObject<T> : ScriptableObject where T : GenericScriptableObject
     {
         public T[] items;
 
@@ -14,7 +14,7 @@ namespace RicUtils
             items.CopyTo(temp, 0);
             this.items = temp;
         }
-		
+
         public T this[int index]
         {
             get { return items[index]; }
