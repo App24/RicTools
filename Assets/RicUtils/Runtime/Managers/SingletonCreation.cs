@@ -10,7 +10,7 @@ namespace RicUtils.Managers
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void OnLoad()
         {
-            foreach (var singletonManager in RicUtils_Settings.singletonManagers)
+            foreach (var singletonManager in RuntimeSettings.singletonManagers)
             {
                 var type = singletonManager.manager.Type;
                 if (type == null)

@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace RicUtils.Editor
 {
-    public static class EditorUtilities
+    public static class EditorGUIHelper
     {
         public const float LABEL_WIDTH = 125;
 

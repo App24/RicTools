@@ -15,7 +15,7 @@ namespace RicUtils.Editor
     {
         public static List<ScriptableEditor> GetScriptableEditors()
         {
-            return new List<ScriptableEditor>(RicUtils_EditorSettings.scriptableEditors);
+            return new List<ScriptableEditor>(EditorSettings.scriptableEditors);
         }
 
         public static List<T> FindAssetsByType<T>() where T : Object

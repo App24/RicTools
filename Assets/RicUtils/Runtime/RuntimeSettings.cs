@@ -7,9 +7,9 @@ namespace RicUtils
 {
     [System.Serializable]
     [ExcludeFromPreset]
-    public class RicUtils_Settings : ScriptableObject
+    public class RuntimeSettings : ScriptableObject
     {
-        private static RicUtils_Settings s_Instance;
+        private static RuntimeSettings s_Instance;
 
         private const string SETTINGS_PATH = "Assets/RicUtils/Resources";
 
@@ -20,17 +20,17 @@ namespace RicUtils
         }
         public SingletonManager[] m_singletonManagers;
 
-        public static RicUtils_Settings instance
+        public static RuntimeSettings instance
         {
             get
             {
-                if (RicUtils_Settings.s_Instance == null)
+                if (RuntimeSettings.s_Instance == null)
                 {
-                    RicUtils_Settings.s_Instance = Resources.Load<RicUtils_Settings>("RicUtils Settings");
+                    RuntimeSettings.s_Instance = Resources.Load<RuntimeSettings>("RicUtils Settings");
 #if UNITY_EDITOR
                     if (!s_Instance)
                     {
-                        s_Instance = ScriptableObject.CreateInstance<RicUtils_Settings>();
+                        s_Instance = ScriptableObject.CreateInstance<RuntimeSettings>();
                         RicUtilities.CreateAssetFolder(SETTINGS_PATH);
                         AssetDatabase.CreateAsset(s_Instance, $"{SETTINGS_PATH}/RicUtils Settings.asset");
                         AssetDatabase.SaveAssets();
@@ -38,15 +38,15 @@ namespace RicUtils
 #endif
                 }
 
-                return RicUtils_Settings.s_Instance;
+                return RuntimeSettings.s_Instance;
             }
         }
 
-        public static RicUtils_Settings LoadDefaultSettings()
+        public static RuntimeSettings LoadDefaultSettings()
         {
             if (s_Instance == null)
             {
-                RicUtils_Settings settings = Resources.Load<RicUtils_Settings>("RicUtils Settings");
+                RuntimeSettings settings = Resources.Load<RuntimeSettings>("RicUtils Settings");
                 if (settings != null)
                     s_Instance = settings;
             }
@@ -54,11 +54,16 @@ namespace RicUtils
             return s_Instance;
         }
 
-        public static RicUtils_Settings GetSettings()
+        public static RuntimeSettings GetSettings()
         {
-            if (RicUtils_Settings.instance == null) return null;
+            if (RuntimeSettings.instance == null) return null;
 
-            return RicUtils_Settings.instance;
+            return RuntimeSettings.instance;
+        }
+
+        public static SerializedObject GetSerializedObject()
+        {
+            return new SerializedObject(instance);
         }
     }
 }

@@ -2,13 +2,13 @@ using RicUtils.Managers;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
-using UnityEditor.VersionControl;
 using UnityEditorInternal;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace RicUtils.Editor
 {
-    public class RicUtils_SettingsEditor : EditorWindow
+    public static class ProjectsSettingsDrawer
     {
         internal class Styles
         {
@@ -20,30 +20,46 @@ namespace RicUtils.Editor
             public static readonly GUIContent scriptableEditorsAddButtonLabel = new GUIContent("Add Scriptable Editor");
         }
 
-        private EditorSettings editorSettings;
-        private RuntimeSettings settings;
+        private static ReorderableList m_scriptableEditorsList;
+        private static ReorderableList m_singletonManagersList;
 
-        private ReorderableList m_scriptableEditorsList;
-        private ReorderableList m_singletonManagersList;
+        private static SerializedObject editorSerializedObject;
+        private static SerializedObject serializedObject;
+
+        private static RuntimeSettings settings;
+        private static EditorSettings editorSettings;
 
         private const string k_UndoRedo = "UndoRedoPerformed";
 
-        private SerializedObject editorSerializedObject;
-        private SerializedObject serializedObject;
-
-        [MenuItem("RicUtils/Settings", priority = 0, validate = true)]
-        public static RicUtils_SettingsEditor ShowWindow()
+        [SettingsProvider]
+        public static SettingsProvider CreateSettingsProvider()
         {
-            return GetWindow<RicUtils_SettingsEditor>("RicUtils Settings");
+            return new SettingsProvider("Project/Packages/RicUtils", SettingsScope.Project)
+            {
+                activateHandler = OnActivate,
+                guiHandler = OnGUI,
+                keywords = GetKeywords(),
+                titleBarGuiHandler = () =>
+                {
+                    EditorGUIHelper.labelGUILayoutOptions = new GUILayoutOption[] { };
+                    EditorGUIHelper.labelStyle = new GUIStyle(GUI.skin.label)
+                    {
+                        alignment = TextAnchor.MiddleRight,
+                    };
+                    EditorGUIHelper.DrawLabel("Version: " + EditorSettings.version);
+                    EditorGUIHelper.ResetLabelGUILayoutOptions();
+                    EditorGUIHelper.ResetLabelStyle();
+                }
+            };
         }
 
-        private void OnEnable()
+        private static void OnActivate(string searchContext, VisualElement rootElement)
         {
             editorSettings = EditorSettings.instance;
             settings = RuntimeSettings.instance;
 
-            editorSerializedObject = new SerializedObject(editorSettings);
-            serializedObject = new SerializedObject(settings);
+            editorSerializedObject = EditorSettings.GetSerializedObject();
+            serializedObject = RuntimeSettings.GetSerializedObject();
 
             m_scriptableEditorsList = new ReorderableList(editorSerializedObject, editorSerializedObject.FindProperty("m_scriptableEditors"), false, true, true, true);
 
@@ -59,37 +75,18 @@ namespace RicUtils.Editor
                 float width = rect.width - labelWidth;
 
                 EditorGUI.LabelField(new Rect(rect.x, rect.y, labelWidth, EditorGUIUtility.singleLineHeight), "Scriptable Object Type");
-                //rect.x += 110;
                 EditorGUI.PropertyField(new Rect(rect.x + labelWidth, rect.y, width, EditorGUIUtility.singleLineHeight), element.FindPropertyRelative("customScriptableObjectType"), GUIContent.none);
+
                 rect.y += EditorGUIUtility.singleLineHeight + 2;
-                //rect.x += width + 5;
 
                 EditorGUI.LabelField(new Rect(rect.x, rect.y, labelWidth, EditorGUIUtility.singleLineHeight), "Editor Type");
-                //rect.x += 70;
                 EditorGUI.PropertyField(new Rect(rect.x + labelWidth, rect.y, width, EditorGUIUtility.singleLineHeight), element.FindPropertyRelative("editorType"), GUIContent.none);
+
                 rect.y += EditorGUIUtility.singleLineHeight + 2;
-                //rect.x += width + 5;
 
                 EditorGUI.LabelField(new Rect(rect.x, rect.y, labelWidth, EditorGUIUtility.singleLineHeight), "Available Scriptable Object Type");
-                //rect.x += 110;
                 EditorGUI.PropertyField(new Rect(rect.x + labelWidth, rect.y, width, EditorGUIUtility.singleLineHeight), element.FindPropertyRelative("availableScriptableObjectType"), GUIContent.none);
 
-                /*var temp = element.objectReferenceValue as ScriptableEditor;
-
-                if (!temp)
-                {
-                    EditorGUI.PropertyField(new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight), element, GUIContent.none);
-                    return;
-                }
-
-                if (temp.serializedObject == null) temp.serializedObject = new SerializedObject(temp);
-
-                EditorGUI.PropertyField(new Rect(rect.x, rect.y, width, EditorGUIUtility.singleLineHeight), temp.serializedObject.FindProperty("customScriptableObjectType"), GUIContent.none);
-                EditorGUI.PropertyField(new Rect(rect.x + width + 5, rect.y, width, EditorGUIUtility.singleLineHeight), temp.serializedObject.FindProperty("editorType"), GUIContent.none);
-                EditorGUI.PropertyField(new Rect(rect.x + ((width + 5) * 2), rect.y, width, EditorGUIUtility.singleLineHeight), temp.serializedObject.FindProperty("availableScriptableObjectType"), GUIContent.none);
-                EditorGUI.PropertyField(new Rect(rect.x + ((width + 8) * 3), rect.y, 6, EditorGUIUtility.singleLineHeight), element, GUIContent.none);
-
-                temp.serializedObject.ApplyModifiedProperties();*/
             };
 
             m_scriptableEditorsList.drawHeaderCallback = rect =>
@@ -154,7 +151,7 @@ namespace RicUtils.Editor
             };
         }
 
-        private void OnGUI()
+        private static void OnGUI(string searchContext)
         {
             editorSerializedObject.Update();
             serializedObject.Update();
@@ -183,17 +180,6 @@ namespace RicUtils.Editor
             EditorGUILayout.Space();
             EditorGUILayout.EndVertical();
 
-
-            /*EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-            if (GUILayout.Button(Styles.scriptableEditorsAddButtonLabel))
-            {
-                var old = new List<ScriptableEditor>((target as RicUtils_Settings).m_scriptableEditors);
-                old.Add(new ScriptableEditor());
-                (target as RicUtils_Settings).m_scriptableEditors = old.ToArray();
-                AssetDatabase.SaveAssets();
-            }
-            EditorGUILayout.EndVertical();*/
-
             if (editorSerializedObject.ApplyModifiedProperties() || evt_cmd == k_UndoRedo)
             {
                 EditorUtility.SetDirty(editorSettings);
@@ -204,6 +190,24 @@ namespace RicUtils.Editor
             {
                 EditorUtility.SetDirty(settings);
                 //TMPro_EventManager.ON_TMP_SETTINGS_CHANGED();
+            }
+        }
+
+        private static HashSet<string> GetKeywords()
+        {
+            var keywords = new HashSet<string>();
+            keywords.AddWords(Styles.scriptableEditorsLabel.text);
+            keywords.AddWords(Styles.singletonManagersLabel.text);
+            return keywords;
+        }
+
+        private static readonly char[] _separators = { ' ' };
+
+        private static void AddWords(this HashSet<string> set, string phrase)
+        {
+            foreach (string word in phrase.Split(_separators))
+            {
+                set.Add(word);
             }
         }
     }

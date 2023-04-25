@@ -1,6 +1,6 @@
 {
   "name": "io.github.app24.ricutils",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "displayName": "RicUtils",
   "dependencies": {
     "com.solidalloy.type-references": "2.16.0"
@@ -9,8 +9,7 @@
   ],
   "author": {
     "name": "Ricardo Xavier",
-    "email": "",
-    "url": ""
+    "url": "https://github.com/App24/"
   },
   "type": "tool",
   "scopedRegistries": [

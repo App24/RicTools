@@ -21,7 +21,7 @@ namespace RicUtils.Editor
 
         private void OnGUI()
         {
-            EditorUtilities.DrawObjectField(ref scriptableObject, "Scriptable Object", () =>
+            EditorGUIHelper.DrawObjectField(ref scriptableObject, "Scriptable Object", () =>
             {
                 LoadScriptableObject(scriptableObject, scriptableObject == null);
             });
@@ -43,13 +43,13 @@ namespace RicUtils.Editor
         protected void DrawIDInput(ref string id)
         {
             GUI.enabled = scriptableObject == null;
-            EditorUtilities.DrawStringInput(ref id, "ID");
+            EditorGUIHelper.DrawStringInput(ref id, "ID");
             GUI.enabled = true;
         }
 
         protected void DrawSaveDeleteButtons(bool checkExists = true)
         {
-            EditorUtilities.DrawSeparator();
+            EditorGUIHelper.DrawSeparator();
             List<CompleteCriteria> criteria = new List<CompleteCriteria>(GetInbuiltCompleteCriteria());
             criteria.AddRange(GetCompleteCriteria());
             string tooltip = "";
