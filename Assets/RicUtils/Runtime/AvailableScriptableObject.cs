@@ -7,6 +7,7 @@ namespace RicUtils
     public class AvailableScriptableObject<T> : ScriptableObject where T : GenericScriptableObject
     {
         public T[] items;
+        public List<T> Items => new List<T>(items);
 
         public void SetItems(IList<T> items)
         {

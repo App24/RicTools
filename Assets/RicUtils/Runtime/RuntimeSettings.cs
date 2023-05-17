@@ -61,9 +61,11 @@ namespace RicUtils
             return RuntimeSettings.instance;
         }
 
+#if UNITY_EDITOR
         public static SerializedObject GetSerializedObject()
         {
             return new SerializedObject(instance);
         }
+#endif
     }
 }
