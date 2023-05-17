@@ -1,3 +1,4 @@
+using Codice.CM.Common;
 using RicUtils.Managers;
 using System.Collections;
 using System.Collections.Generic;
@@ -125,11 +126,11 @@ namespace RicUtils.Editor
                     {
                         if (GUI.Button(new Rect(rect.x + labelWidth, rect.y, width, EditorGUIUtility.singleLineHeight), "Create"))
                         {
-                            RicUtilities.CreateAssetFolder("Assets/ScriptableObject/Managers Data");
+                            RicUtilities.CreateAssetFolder(PathConstants.MANAGERS_DATA_PATH);
 
                             var data = ScriptableObject.CreateInstance(manager.BaseType.GenericTypeArguments[1]);
                             if (!AssetDatabase.Contains(data))
-                                AssetDatabase.CreateAsset(data, $"Assets/ScriptableObject/Managers Data/{manager.Name}_data.asset");
+                                AssetDatabase.CreateAsset(data, $"{PathConstants.MANAGERS_DATA_PATH}/{manager.Name}_data.asset");
 
                             settings.m_singletonManagers[index].data = data as DataManagerScriptableObject;
 

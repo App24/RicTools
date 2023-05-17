@@ -11,8 +11,6 @@ namespace RicUtils
     {
         private static RuntimeSettings s_Instance;
 
-        private const string SETTINGS_PATH = "Assets/RicUtils/Resources";
-
 
         public static SingletonManager[] singletonManagers
         {
@@ -26,13 +24,13 @@ namespace RicUtils
             {
                 if (RuntimeSettings.s_Instance == null)
                 {
-                    RuntimeSettings.s_Instance = Resources.Load<RuntimeSettings>("RicUtils Settings");
+                    RuntimeSettings.s_Instance = Resources.Load<RuntimeSettings>(PathConstants.RUNTIME_SETTINGS_NAME);
 #if UNITY_EDITOR
                     if (!s_Instance)
                     {
                         s_Instance = ScriptableObject.CreateInstance<RuntimeSettings>();
-                        RicUtilities.CreateAssetFolder(SETTINGS_PATH);
-                        AssetDatabase.CreateAsset(s_Instance, $"{SETTINGS_PATH}/RicUtils Settings.asset");
+                        RicUtilities.CreateAssetFolder(PathConstants.RUNTIME_SETTINGS_PATH);
+                        AssetDatabase.CreateAsset(s_Instance, $"{PathConstants.RUNTIME_SETTINGS_PATH}/{PathConstants.RUNTIME_SETTINGS_NAME}.asset");
                         AssetDatabase.SaveAssets();
                     }
 #endif
@@ -46,7 +44,7 @@ namespace RicUtils
         {
             if (s_Instance == null)
             {
-                RuntimeSettings settings = Resources.Load<RuntimeSettings>("RicUtils Settings");
+                RuntimeSettings settings = Resources.Load<RuntimeSettings>(PathConstants.RUNTIME_SETTINGS_NAME);
                 if (settings != null)
                     s_Instance = settings;
             }

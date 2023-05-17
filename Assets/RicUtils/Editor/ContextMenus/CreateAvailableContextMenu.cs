@@ -20,7 +20,7 @@ namespace RicUtils.Editor
 
             string defaultNewFileName = Path.Combine(path, className + ".cs");
 
-            string templatePath = "Assets/RicUtils/Editor/Templates/Script-NewAvailableScriptableObject.cs.txt";
+            string templatePath = PathConstants.TEMPLATES_PATH + "/Script-NewAvailableScriptableObject.cs.txt";
 
             var endAction = ScriptableObject.CreateInstance<DoCreateAvailableAsset>();
 

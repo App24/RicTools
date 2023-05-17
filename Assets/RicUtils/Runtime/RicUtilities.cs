@@ -11,7 +11,7 @@ namespace RicUtils
     {
         public static T GetAvailableScriptableObject<T, D>() where T : AvailableScriptableObject<D> where D : GenericScriptableObject
         {
-            return Resources.Load<T>("Availables/" + GetAvailableScriptableObjectName(typeof(T)));
+            return Resources.Load<T>(PathConstants.RESOURCES_AVAILABLES_FOLDER + "/" + GetAvailableScriptableObjectName(typeof(T)));
         }
 
         public static string GetAvailableScriptableObjectName(System.Type type)
@@ -23,14 +23,14 @@ namespace RicUtils
 
         public static string GetAvailableScriptableObjectPath(System.Type type)
         {
-            return $"Assets/ScriptableObjects/Resources/Availables/{GetAvailableScriptableObjectName(type)}.asset";
+            return $"{PathConstants.AVAILABLES_FOLDER}/{GetAvailableScriptableObjectName(type)}.asset";
         }
 
         public static string GetScriptableObjectPath(System.Type type)
         {
             var name = type.Name;
             name = name.Replace("ScriptableObject", "");
-            return $"Assets/ScriptableObjects/{name}s";
+            return $"{PathConstants.ASSETS_FOLDER}/{PathConstants.SCRIPTABLES_FOLDER}/{name}s";
         }
 
         public static string ToFriendlyCase(this string PascalString)

@@ -29,7 +29,7 @@ namespace RicUtils.Editor
 
             string defaultNewFileName = Path.Combine(path, className + ".cs");
 
-            string templatePath = "Assets/RicUtils/Editor/Templates/Script-NewGenericEditorWindow.cs.txt";
+            string templatePath = PathConstants.TEMPLATES_PATH + "/Script-NewGenericEditorWindow.cs.txt";
 
             var endAction = ScriptableObject.CreateInstance<DoCreateEditorAsset>();
 

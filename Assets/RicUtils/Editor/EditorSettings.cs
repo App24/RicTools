@@ -11,11 +11,9 @@ namespace RicUtils.Editor
     {
         private static EditorSettings s_Instance;
 
-        private const string SETTINGS_PATH = "Assets/RicUtils/Editor/Resources";
-
         public static string version
         {
-            get { return "1.4.1"; }
+            get { return "1.4.2"; }
         }
 
         public static ScriptableEditor[] scriptableEditors
@@ -30,12 +28,12 @@ namespace RicUtils.Editor
             {
                 if (EditorSettings.s_Instance == null)
                 {
-                    EditorSettings.s_Instance = Resources.Load<EditorSettings>("RicUtils Editor Settings");
+                    EditorSettings.s_Instance = Resources.Load<EditorSettings>(PathConstants.EDITOR_SETTINGS_NAME);
                     if (!s_Instance)
                     {
                         s_Instance = ScriptableObject.CreateInstance<EditorSettings>();
-                        RicUtilities.CreateAssetFolder(SETTINGS_PATH);
-                        AssetDatabase.CreateAsset(s_Instance, $"{SETTINGS_PATH}/RicUtils Editor Settings.asset");
+                        RicUtilities.CreateAssetFolder(PathConstants.EDITOR_SETTINGS_PATH);
+                        AssetDatabase.CreateAsset(s_Instance, $"{PathConstants.EDITOR_SETTINGS_PATH}/{PathConstants.EDITOR_SETTINGS_NAME}.asset");
                         AssetDatabase.SaveAssets();
                     }
                 }
@@ -48,7 +46,7 @@ namespace RicUtils.Editor
         {
             if (s_Instance == null)
             {
-                EditorSettings settings = Resources.Load<EditorSettings>("RicUtils Editor Settings");
+                EditorSettings settings = Resources.Load<EditorSettings>(PathConstants.EDITOR_SETTINGS_NAME);
                 if (settings != null)
                     s_Instance = settings;
             }

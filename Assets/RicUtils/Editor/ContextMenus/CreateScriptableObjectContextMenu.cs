@@ -22,7 +22,7 @@ namespace RicUtils.Editor
 
             string defaultNewFileName = Path.Combine(path, "NewGenericScriptableObject.cs");
 
-            string templatePath = "Assets/RicUtils/Editor/Templates/Script-NewGenericScriptableObject.cs.txt";
+            string templatePath = PathConstants.TEMPLATES_PATH + "/Script-NewGenericScriptableObject.cs.txt";
 
             ToolUtilities.CreateNewScript(defaultNewFileName, templatePath);
 
