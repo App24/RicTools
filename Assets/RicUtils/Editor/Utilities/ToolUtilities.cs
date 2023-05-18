@@ -1,5 +1,6 @@
 using RicUtils.Editor.Settings;
 using RicUtils.ScriptableObjects;
+using RicUtils.Utilities;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -81,8 +82,8 @@ namespace RicUtils.Editor.Utilities
                     }
                     var temp = showWindow.Invoke(null, null);
                     var data = System.Convert.ChangeType(temp, keyValuePair.EditorType);
-                    keyValuePair.EditorType.GetField("scriptableObject").SetValue(data, so);
-                    keyValuePair.EditorType.GetMethod("LoadScriptableObject").Invoke(data, new object[] { so, so == null });
+                    keyValuePair.EditorType.GetRecursiveField("scriptableObject", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance).SetValue(data, so);
+                    keyValuePair.EditorType.GetRecursiveMethod("LoadScriptableObjectInternal", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(data, new object[] { so });
                     return true;
                 }
             }

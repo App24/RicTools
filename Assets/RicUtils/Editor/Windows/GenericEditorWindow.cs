@@ -25,7 +25,7 @@ namespace RicUtils.Editor.Windows
         {
             EditorGUIHelper.DrawObjectField(ref scriptableObject, "Scriptable Object", () =>
             {
-                LoadScriptableObjectInternal(scriptableObject, scriptableObject == null);
+                LoadScriptableObjectInternal(scriptableObject);
             });
 
             DrawIDInput(ref spawnableId);
@@ -42,14 +42,14 @@ namespace RicUtils.Editor.Windows
             serializedObject = new SerializedObject(this);
         }
 
-        protected void DrawIDInput(ref string id)
+        private void DrawIDInput(ref string id)
         {
             GUI.enabled = scriptableObject == null;
             EditorGUIHelper.DrawStringInput(ref id, "ID");
             GUI.enabled = true;
         }
 
-        protected void DrawSaveDeleteButtons(bool checkExists = true)
+        private void DrawSaveDeleteButtons(bool checkExists = true)
         {
             EditorGUIHelper.DrawSeparator();
             List<CompleteCriteria> criteria = new List<CompleteCriteria>(GetInbuiltCompleteCriteria());
@@ -118,7 +118,7 @@ namespace RicUtils.Editor.Windows
                 AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(scriptableObject));
 
                 scriptableObject = null;
-                LoadScriptableObjectInternal(scriptableObject, true);
+                LoadScriptableObjectInternal(scriptableObject);
             }
             EditorGUI.EndDisabledGroup();
         }
@@ -151,8 +151,9 @@ namespace RicUtils.Editor.Windows
                 AssetDatabase.CreateAsset(asset, $"{SavePath}/{saveName}.asset");
         }
 
-        private void LoadScriptableObjectInternal(T so, bool isNull)
+        private void LoadScriptableObjectInternal(T so)
         {
+            bool isNull = so == null;
             if (isNull)
             {
                 spawnableId = "";

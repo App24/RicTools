@@ -1,6 +1,8 @@
 using RicUtils.ScriptableObjects;
+using RicUtils.Utilities;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
@@ -75,7 +77,7 @@ namespace RicUtils.Editor.CustomEditor
                     {
                         items.RemoveAt(j);
                     }
-                    availableScriptableObjectType.GetMethod("SetItems", System.Reflection.BindingFlags.NonPublic).Invoke(availableScriptableObject, new object[] { items });
+                    availableScriptableObjectType.GetRecursiveMethod("SetItems", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(availableScriptableObject, new object[] { items });
 
                     EditorUtility.SetDirty(availableScriptableObject);
                     AssetDatabase.SaveAssets();

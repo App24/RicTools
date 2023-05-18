@@ -2,11 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using RicUtils;
-using RicUtils.Editor;
+using RicUtils.Editor.Windows;
+using UnityEditor;
 
     #ROOTNAMESPACEBEGIN#
 public class #SCRIPTNAME# : GenericEditorWindow<#SCRIPTABLEOBJECT#, #AVAILABLESCRIPTABLEOBJECT#>
 {
+    [MenuItem("Window/RicUtil Windows/#SCRIPTNAME#")]
 	public static #SCRIPTNAME# ShowWindow()
     {
         return GetWindow<#SCRIPTNAME#>();
@@ -18,6 +20,11 @@ public class #SCRIPTNAME# : GenericEditorWindow<#SCRIPTABLEOBJECT#, #AVAILABLESC
     }
 
     protected override void DrawGUI()
+    {
+
+    }
+
+    protected override void LoadScriptableObject(#SCRIPTABLEOBJECT# so, bool isNull)
     {
 
     }
