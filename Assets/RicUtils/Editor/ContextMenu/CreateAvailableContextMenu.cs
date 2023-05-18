@@ -1,3 +1,5 @@
+using RicUtils.Editor.Utilities;
+using RicUtils.ScriptableObjects;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -5,7 +7,7 @@ using System.Security.Cryptography;
 using UnityEditor;
 using UnityEngine;
 
-namespace RicUtils.Editor
+namespace RicUtils.Editor.ContextMenu
 {
     public static class CreateAvailableContextMenu
     {

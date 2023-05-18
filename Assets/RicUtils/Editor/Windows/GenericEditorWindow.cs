@@ -1,14 +1,17 @@
+using RicUtils.Editor.Utilities;
+using RicUtils.ScriptableObjects;
+using RicUtils.Utilities;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
 
-namespace RicUtils.Editor
+namespace RicUtils.Editor.Windows
 {
     public abstract class GenericEditorWindow<T, D> : EditorWindow where T : GenericScriptableObject where D : AvailableScriptableObject<T>
     {
-        public T scriptableObject;
+        protected T scriptableObject;
 
         protected virtual string AvailableSOPath => RicUtilities.GetAvailableScriptableObjectPath(typeof(D));
 
@@ -17,13 +20,12 @@ namespace RicUtils.Editor
         protected string spawnableId;
 
         protected SerializedObject serializedObject;
-        private Dictionary<string, (SerializedProperty, object)> data = new Dictionary<string, (SerializedProperty, object)>();
 
         private void OnGUI()
         {
             EditorGUIHelper.DrawObjectField(ref scriptableObject, "Scriptable Object", () =>
             {
-                LoadScriptableObject(scriptableObject, scriptableObject == null);
+                LoadScriptableObjectInternal(scriptableObject, scriptableObject == null);
             });
 
             DrawIDInput(ref spawnableId);
@@ -103,11 +105,6 @@ namespace RicUtils.Editor
 
                 AssetDatabase.SaveAssets();
 
-
-                //EditorUtility.SetDirty(item);
-
-                //AssetDatabase.SaveAssetIfDirty(available);
-
                 scriptableObject = item;
             }
             EditorGUI.EndDisabledGroup();
@@ -118,24 +115,10 @@ namespace RicUtils.Editor
                 if (!EditorUtility.DisplayDialog("Warning", "You sure you want to delete this asset?", "Continue", "Cancel"))
                     return;
 
-                /*D available = GetAvailableAsset();
-
-                List<T> items = new List<T>(available.items);
-
-                items.Remove(scriptableObject);
-
-                available.items = items.ToArray();
-
-
-                EditorUtility.SetDirty(available);
-
-                AssetDatabase.SaveAssets();*/
-
-                //AssetDatabase.SaveAssetIfDirty(available);
                 AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(scriptableObject));
 
                 scriptableObject = null;
-                LoadScriptableObject(scriptableObject, true);
+                LoadScriptableObjectInternal(scriptableObject, true);
             }
             EditorGUI.EndDisabledGroup();
         }
@@ -168,7 +151,7 @@ namespace RicUtils.Editor
                 AssetDatabase.CreateAsset(asset, $"{SavePath}/{saveName}.asset");
         }
 
-        public virtual void LoadScriptableObject(T so, bool isNull)
+        private void LoadScriptableObjectInternal(T so, bool isNull)
         {
             if (isNull)
             {
@@ -178,7 +161,11 @@ namespace RicUtils.Editor
             {
                 spawnableId = so.id;
             }
+
+            LoadScriptableObject(so, isNull);
         }
+
+        protected abstract void LoadScriptableObject(T so, bool isNull);
 
         protected abstract void CreateAsset(ref T asset);
 

@@ -1,11 +1,13 @@
+using RicUtils.Editor.Utilities;
+using RicUtils.ScriptableObjects;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace RicUtils.Editor
+namespace RicUtils.Editor.CustomEditor
 {
-    [CustomEditor(typeof(GenericScriptableObject), true)]
+    [UnityEditor.CustomEditor(typeof(GenericScriptableObject), true)]
     [CanEditMultipleObjects]
     public class CustomScriptableObjectCustomEditor : UnityEditor.Editor
     {
@@ -41,7 +43,7 @@ namespace RicUtils.Editor
                     alignment = TextAnchor.MiddleCenter,
                     fontSize = 15
                 };
-                EditorGUILayout.LabelField("Check with Ricardo to ensure that there\n should be a custom editor for this", style, GUILayout.ExpandWidth(true), GUILayout.Height(50));
+                EditorGUILayout.LabelField("There is no custom editor for this scriptable object.\nCheck if there should be one.", style, GUILayout.ExpandWidth(true), GUILayout.Height(50));
                 EditorGUILayout.EndHorizontal();
                 base.OnInspectorGUI();
             }

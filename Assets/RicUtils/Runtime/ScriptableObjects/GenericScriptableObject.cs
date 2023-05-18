@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace RicUtils
+namespace RicUtils.ScriptableObjects
 {
     public class GenericScriptableObject : ScriptableObject
     {

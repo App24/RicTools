@@ -1,5 +1,10 @@
 using Codice.CM.Common;
+using RicUtils.Editor.Settings;
+using RicUtils.Editor.Utilities;
 using RicUtils.Managers;
+using RicUtils.ScriptableObjects;
+using RicUtils.Settings;
+using RicUtils.Utilities;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -7,7 +12,7 @@ using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace RicUtils.Editor
+namespace RicUtils.Editor.Windows
 {
     public static class ProjectsSettingsDrawer
     {
@@ -27,8 +32,8 @@ namespace RicUtils.Editor
         private static SerializedObject editorSerializedObject;
         private static SerializedObject serializedObject;
 
-        private static RuntimeSettings settings;
-        private static EditorSettings editorSettings;
+        private static RicUtils_RuntimeSettings settings;
+        private static RicUtils_EditorSettings editorSettings;
 
         private const string k_UndoRedo = "UndoRedoPerformed";
 
@@ -47,7 +52,7 @@ namespace RicUtils.Editor
                     {
                         alignment = TextAnchor.MiddleRight,
                     };
-                    EditorGUIHelper.DrawLabel("Version: " + EditorSettings.version);
+                    EditorGUIHelper.DrawLabel("Version: " + RicUtils_EditorSettings.version);
                     EditorGUIHelper.ResetLabelGUILayoutOptions();
                     EditorGUIHelper.ResetLabelStyle();
                 }
@@ -56,11 +61,11 @@ namespace RicUtils.Editor
 
         private static void OnActivate(string searchContext, VisualElement rootElement)
         {
-            editorSettings = EditorSettings.instance;
-            settings = RuntimeSettings.instance;
+            editorSettings = RicUtils_EditorSettings.instance;
+            settings = RicUtils_RuntimeSettings.instance;
 
-            editorSerializedObject = EditorSettings.GetSerializedObject();
-            serializedObject = RuntimeSettings.GetSerializedObject();
+            editorSerializedObject = RicUtils_EditorSettings.GetSerializedObject();
+            serializedObject = RicUtils_RuntimeSettings.GetSerializedObject();
 
             m_scriptableEditorsList = new ReorderableList(editorSerializedObject, editorSerializedObject.FindProperty("m_scriptableEditors"), false, true, true, true);
 

@@ -1,3 +1,4 @@
+using RicUtils.Editor.Utilities;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -10,7 +11,7 @@ using UnityEditor.ProjectWindowCallback;
 using UnityEditorInternal;
 using UnityEngine;
 
-namespace RicUtils.Editor
+namespace RicUtils.Editor.ContextMenu
 {
     public static class CreateScriptableObjectContextMenu
     {

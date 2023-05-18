@@ -5,7 +5,7 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
-namespace RicUtils.Editor
+namespace RicUtils.Editor.Utilities
 {
     public static class EditorGUIHelper
     {

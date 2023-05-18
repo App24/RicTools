@@ -1,11 +1,12 @@
+using RicUtils.ScriptableObjects;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace RicUtils.Editor
+namespace RicUtils.Editor.CustomEditor
 {
-    [CustomEditor(typeof(AvailableScriptableObject<>), true)]
+    [UnityEditor.CustomEditor(typeof(AvailableScriptableObject<>), true)]
     [CanEditMultipleObjects]
     public class AvailableScriptableObjectCustomEditor : UnityEditor.Editor
     {
@@ -74,7 +75,7 @@ namespace RicUtils.Editor
                     {
                         items.RemoveAt(j);
                     }
-                    availableScriptableObjectType.GetMethod("SetItems").Invoke(availableScriptableObject, new object[] { items });
+                    availableScriptableObjectType.GetMethod("SetItems", System.Reflection.BindingFlags.NonPublic).Invoke(availableScriptableObject, new object[] { items });
 
                     EditorUtility.SetDirty(availableScriptableObject);
                     AssetDatabase.SaveAssets();

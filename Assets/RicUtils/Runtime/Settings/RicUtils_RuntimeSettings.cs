@@ -1,15 +1,16 @@
+using RicUtils.Utilities;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace RicUtils
+namespace RicUtils.Settings
 {
     [System.Serializable]
     [ExcludeFromPreset]
-    public class RuntimeSettings : ScriptableObject
+    internal class RicUtils_RuntimeSettings : ScriptableObject
     {
-        private static RuntimeSettings s_Instance;
+        private static RicUtils_RuntimeSettings s_Instance;
 
 
         public static SingletonManager[] singletonManagers
@@ -18,17 +19,17 @@ namespace RicUtils
         }
         public SingletonManager[] m_singletonManagers;
 
-        public static RuntimeSettings instance
+        public static RicUtils_RuntimeSettings instance
         {
             get
             {
-                if (RuntimeSettings.s_Instance == null)
+                if (RicUtils_RuntimeSettings.s_Instance == null)
                 {
-                    RuntimeSettings.s_Instance = Resources.Load<RuntimeSettings>(PathConstants.RUNTIME_SETTINGS_NAME);
+                    RicUtils_RuntimeSettings.s_Instance = Resources.Load<RicUtils_RuntimeSettings>(PathConstants.RUNTIME_SETTINGS_NAME);
 #if UNITY_EDITOR
                     if (!s_Instance)
                     {
-                        s_Instance = ScriptableObject.CreateInstance<RuntimeSettings>();
+                        s_Instance = ScriptableObject.CreateInstance<RicUtils_RuntimeSettings>();
                         RicUtilities.CreateAssetFolder(PathConstants.RUNTIME_SETTINGS_PATH);
                         AssetDatabase.CreateAsset(s_Instance, $"{PathConstants.RUNTIME_SETTINGS_PATH}/{PathConstants.RUNTIME_SETTINGS_NAME}.asset");
                         AssetDatabase.SaveAssets();
@@ -36,15 +37,15 @@ namespace RicUtils
 #endif
                 }
 
-                return RuntimeSettings.s_Instance;
+                return RicUtils_RuntimeSettings.s_Instance;
             }
         }
 
-        public static RuntimeSettings LoadDefaultSettings()
+        public static RicUtils_RuntimeSettings LoadDefaultSettings()
         {
             if (s_Instance == null)
             {
-                RuntimeSettings settings = Resources.Load<RuntimeSettings>(PathConstants.RUNTIME_SETTINGS_NAME);
+                RicUtils_RuntimeSettings settings = Resources.Load<RicUtils_RuntimeSettings>(PathConstants.RUNTIME_SETTINGS_NAME);
                 if (settings != null)
                     s_Instance = settings;
             }
@@ -52,11 +53,11 @@ namespace RicUtils
             return s_Instance;
         }
 
-        public static RuntimeSettings GetSettings()
+        public static RicUtils_RuntimeSettings GetSettings()
         {
-            if (RuntimeSettings.instance == null) return null;
+            if (RicUtils_RuntimeSettings.instance == null) return null;
 
-            return RuntimeSettings.instance;
+            return RicUtils_RuntimeSettings.instance;
         }
 
 #if UNITY_EDITOR

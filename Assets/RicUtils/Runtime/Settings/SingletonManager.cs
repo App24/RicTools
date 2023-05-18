@@ -1,14 +1,15 @@
 using RicUtils.Managers;
+using RicUtils.ScriptableObjects;
 using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using TypeReferences;
 using UnityEngine;
 
-namespace RicUtils
+namespace RicUtils.Settings
 {
     [System.Serializable]
-    public class SingletonManager
+    internal class SingletonManager
     {
         [Inherits(typeof(SingletonGenericManager<>), ShortName = true, AllowAbstract = false, IncludeBaseType = false, ShowAllTypes = true)]
         public TypeReference manager;

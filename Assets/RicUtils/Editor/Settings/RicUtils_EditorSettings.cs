@@ -1,19 +1,20 @@
+using RicUtils.Utilities;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace RicUtils.Editor
+namespace RicUtils.Editor.Settings
 {
     [System.Serializable]
     [ExcludeFromPreset]
-    internal class EditorSettings : ScriptableObject
+    internal class RicUtils_EditorSettings : ScriptableObject
     {
-        private static EditorSettings s_Instance;
+        private static RicUtils_EditorSettings s_Instance;
 
         public static string version
         {
-            get { return "1.4.2"; }
+            get { return "1.4.3"; }
         }
 
         public static ScriptableEditor[] scriptableEditors
@@ -22,31 +23,31 @@ namespace RicUtils.Editor
         }
         public ScriptableEditor[] m_scriptableEditors;
 
-        public static EditorSettings instance
+        public static RicUtils_EditorSettings instance
         {
             get
             {
-                if (EditorSettings.s_Instance == null)
+                if (RicUtils_EditorSettings.s_Instance == null)
                 {
-                    EditorSettings.s_Instance = Resources.Load<EditorSettings>(PathConstants.EDITOR_SETTINGS_NAME);
+                    RicUtils_EditorSettings.s_Instance = Resources.Load<RicUtils_EditorSettings>(PathConstants.EDITOR_SETTINGS_NAME);
                     if (!s_Instance)
                     {
-                        s_Instance = ScriptableObject.CreateInstance<EditorSettings>();
+                        s_Instance = ScriptableObject.CreateInstance<RicUtils_EditorSettings>();
                         RicUtilities.CreateAssetFolder(PathConstants.EDITOR_SETTINGS_PATH);
                         AssetDatabase.CreateAsset(s_Instance, $"{PathConstants.EDITOR_SETTINGS_PATH}/{PathConstants.EDITOR_SETTINGS_NAME}.asset");
                         AssetDatabase.SaveAssets();
                     }
                 }
 
-                return EditorSettings.s_Instance;
+                return RicUtils_EditorSettings.s_Instance;
             }
         }
 
-        public static EditorSettings LoadDefaultSettings()
+        public static RicUtils_EditorSettings LoadDefaultSettings()
         {
             if (s_Instance == null)
             {
-                EditorSettings settings = Resources.Load<EditorSettings>(PathConstants.EDITOR_SETTINGS_NAME);
+                RicUtils_EditorSettings settings = Resources.Load<RicUtils_EditorSettings>(PathConstants.EDITOR_SETTINGS_NAME);
                 if (settings != null)
                     s_Instance = settings;
             }
@@ -54,11 +55,11 @@ namespace RicUtils.Editor
             return s_Instance;
         }
 
-        public static EditorSettings GetSettings()
+        public static RicUtils_EditorSettings GetSettings()
         {
-            if (EditorSettings.instance == null) return null;
+            if (RicUtils_EditorSettings.instance == null) return null;
 
-            return EditorSettings.instance;
+            return RicUtils_EditorSettings.instance;
         }
 
         public static SerializedObject GetSerializedObject()

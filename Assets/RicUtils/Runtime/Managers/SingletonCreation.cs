@@ -1,3 +1,5 @@
+using RicUtils.Settings;
+using RicUtils.Utilities;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
@@ -5,12 +7,12 @@ using UnityEngine;
 
 namespace RicUtils.Managers
 {
-    public static class SingletonCreation
+    internal static class SingletonCreation
     {
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void OnLoad()
         {
-            foreach (var singletonManager in RuntimeSettings.singletonManagers)
+            foreach (var singletonManager in RicUtils_RuntimeSettings.singletonManagers)
             {
                 var type = singletonManager.manager.Type;
                 if (type == null)

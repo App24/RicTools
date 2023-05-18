@@ -1,9 +1,11 @@
+using RicUtils.Editor.Utilities;
+using RicUtils.Utilities;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace RicUtils.Editor
+namespace RicUtils.Editor.Toolbar
 {
     public static class CreateAvailableScriptableObjects
     {
@@ -22,7 +24,7 @@ namespace RicUtils.Editor
                 {
                     available = ScriptableObject.CreateInstance(keyValuePair.AvailableScriptableObjectType);
                     var items = (IList)System.Activator.CreateInstance(typeof(List<>).MakeGenericType(keyValuePair.CustomScriptableObjectType));
-                    keyValuePair.AvailableScriptableObjectType.GetMethod("SetItems").Invoke(available, new object[] { items });
+                    keyValuePair.AvailableScriptableObjectType.GetMethod("SetItems", System.Reflection.BindingFlags.NonPublic).Invoke(available, new object[] { items });
 
                     AssetDatabase.CreateAsset(available, path);
 

@@ -1,8 +1,10 @@
-﻿using TypeReferences;
+﻿using RicUtils.Editor.Windows;
+using RicUtils.ScriptableObjects;
+using TypeReferences;
 using UnityEditor;
 using UnityEngine;
 
-namespace RicUtils.Editor
+namespace RicUtils.Editor.Settings
 {
     [System.Serializable]
     public class ScriptableEditor
