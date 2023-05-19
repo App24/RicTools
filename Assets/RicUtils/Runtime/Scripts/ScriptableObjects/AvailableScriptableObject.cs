@@ -21,5 +21,26 @@ namespace RicUtils.ScriptableObjects
             get { return items[index]; }
             set { items[index] = value; }
         }
+
+        public T this[string id]
+        {
+            get
+            {
+                var item = Items.Find(i => i.id == id);
+                return item;
+            }
+            set
+            {
+                int index = Items.FindIndex(i => i.id == id);
+                if (index < 0)
+                {
+                    Items.Add(value);
+                    return;
+                }
+
+                Items.RemoveAt(index);
+                Items.Insert(index, value);
+            }
+        }
     }
 }
