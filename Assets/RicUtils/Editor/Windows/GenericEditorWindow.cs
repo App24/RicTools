@@ -5,68 +5,70 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.Callbacks;
+using UnityEditor.UIElements;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace RicUtils.Editor.Windows
 {
     public abstract class GenericEditorWindow<T, D> : EditorWindow where T : GenericScriptableObject where D : AvailableScriptableObject<T>
     {
-        protected T scriptableObject;
+        protected EditorContainer<T> scriptableObject = new EditorContainer<T>();
 
         protected virtual string AvailableSOPath => RicUtilities.GetAvailableScriptableObjectPath(typeof(D));
 
         protected virtual string SavePath => RicUtilities.GetScriptableObjectPath(typeof(T));
 
-        protected string spawnableId;
+        protected EditorContainer<string> spawnableId = new EditorContainer<string>();
 
         protected SerializedObject serializedObject;
 
-        private void OnGUI()
-        {
-            EditorGUIHelper.DrawObjectField(ref scriptableObject, "Scriptable Object", () =>
-            {
-                LoadScriptableObjectInternal(scriptableObject);
-            });
+        private ObjectField soObjectField;
 
-            DrawIDInput(ref spawnableId);
+        private TextField idTextField;
 
-            DrawGUI();
+        private Button saveButton, deleteButton;
 
-            DrawSaveDeleteButtons();
-        }
-
-        protected abstract void DrawGUI();
+        private System.Action onLoad;
 
         protected virtual void OnEnable()
         {
             serializedObject = new SerializedObject(this);
         }
 
-        private void DrawIDInput(ref string id)
+        private void CreateGUI()
         {
-            GUI.enabled = scriptableObject == null;
-            EditorGUIHelper.DrawStringInput(ref id, "ID");
-            GUI.enabled = true;
+            onLoad = null;
+            VisualElement root = rootVisualElement;
+            soObjectField = root.AddObjectField(scriptableObject, "Scriptable Object", () =>
+            {
+                LoadScriptableObjectInternal(scriptableObject);
+            });
+
+            DrawIDInput();
+
+            DrawGUI();
+
+            DrawSaveDeleteButtons();
+
+            LoadScriptableObjectInternal(scriptableObject);
         }
+
+        private void DrawIDInput()
+        {
+            idTextField = rootVisualElement.AddTextField(spawnableId, "ID", () =>
+            {
+                CheckCompletion();
+            });
+        }
+
+        protected abstract void DrawGUI();
 
         private void DrawSaveDeleteButtons(bool checkExists = true)
         {
-            EditorGUIHelper.DrawSeparator();
-            List<CompleteCriteria> criteria = new List<CompleteCriteria>(GetInbuiltCompleteCriteria());
-            criteria.AddRange(GetCompleteCriteria());
-            string tooltip = "";
-            bool complete = true;
-            foreach (var c in criteria)
-            {
-                if (!c.isComplete)
-                {
-                    complete = false;
-                    tooltip += $"{c.tooltip}\n";
-                }
-            }
-            tooltip = tooltip.Trim();
-            EditorGUI.BeginDisabledGroup(!complete);
-            if (GUILayout.Button(new GUIContent("Save Asset", tooltip)))
+            rootVisualElement.AddSeparator();
+
+            saveButton = rootVisualElement.AddButton("Save Asset", () =>
             {
                 D available = GetAvailableAsset();
 
@@ -74,18 +76,21 @@ namespace RicUtils.Editor.Windows
 
                 int index = -1;
 
-                if (AssetDatabase.FindAssets($"{spawnableId}", new string[] { SavePath }).Length > 0)
+                var item = AssetDatabase.LoadAssetAtPath<T>($"{SavePath}/{spawnableId}.asset");
+
+                if (item != null)
                 {
                     if (checkExists)
                     {
                         if (!EditorUtility.DisplayDialog("Error", "There is an asset by that ID already, you sure you want to replace it?", "Continue", "Cancel"))
                             return;
                     }
-                    var asset = AssetDatabase.LoadAssetAtPath<T>($"{SavePath}/{spawnableId}.asset");
-                    index = items.IndexOf(asset);
+                    index = items.IndexOf(item);
                 }
-
-                var item = ScriptableObject.CreateInstance<T>();
+                else
+                {
+                    item = ScriptableObject.CreateInstance<T>();
+                }
 
 
                 CreateAsset(ref item);
@@ -101,26 +106,24 @@ namespace RicUtils.Editor.Windows
 
                 available.items = items.ToArray();
 
+                EditorUtility.SetDirty(item);
                 EditorUtility.SetDirty(available);
 
                 AssetDatabase.SaveAssets();
 
-                scriptableObject = item;
-            }
-            EditorGUI.EndDisabledGroup();
-
-            EditorGUI.BeginDisabledGroup(scriptableObject == null);
-            if (GUILayout.Button("Delete Asset"))
+                scriptableObject.Value = item;
+                LoadScriptableObjectInternal(scriptableObject);
+            });
+            deleteButton = rootVisualElement.AddButton("Delete Asset", () =>
             {
                 if (!EditorUtility.DisplayDialog("Warning", "You sure you want to delete this asset?", "Continue", "Cancel"))
                     return;
 
                 AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(scriptableObject));
 
-                scriptableObject = null;
+                scriptableObject.Value = null;
                 LoadScriptableObjectInternal(scriptableObject);
-            }
-            EditorGUI.EndDisabledGroup();
+            });
         }
 
         private D GetAvailableAsset()
@@ -153,17 +156,23 @@ namespace RicUtils.Editor.Windows
 
         private void LoadScriptableObjectInternal(T so)
         {
+
             bool isNull = so == null;
+
             if (isNull)
             {
-                spawnableId = "";
+                spawnableId.Value = "";
             }
             else
             {
-                spawnableId = so.id;
+                spawnableId.Value = so.id;
             }
 
             LoadScriptableObject(so, isNull);
+
+            serializedObject.Update();
+
+            OnLoadInternal();
         }
 
         protected abstract void LoadScriptableObject(T so, bool isNull);
@@ -178,6 +187,64 @@ namespace RicUtils.Editor.Windows
         protected virtual IEnumerable<CompleteCriteria> GetCompleteCriteria()
         {
             yield return new CompleteCriteria(true, "");
+        }
+
+        private void OnLoadInternal()
+        {
+            soObjectField.value = scriptableObject;
+
+            idTextField.SetEnabled(scriptableObject.IsNull());
+
+            idTextField.value = spawnableId;
+
+            deleteButton.SetEnabled(!scriptableObject.IsNull());
+
+            onLoad?.Invoke();
+
+            CheckCompletion();
+
+            OnLoad();
+        }
+
+        protected virtual void OnLoad()
+        {
+
+        }
+
+        protected void CheckCompletion()
+        {
+            List<CompleteCriteria> criteria = new List<CompleteCriteria>(GetInbuiltCompleteCriteria());
+            criteria.AddRange(GetCompleteCriteria());
+            string tooltip = "";
+            bool complete = true;
+            foreach (var c in criteria)
+            {
+                if (!c.isComplete)
+                {
+                    complete = false;
+                    tooltip += $"{c.tooltip}\n";
+                }
+            }
+            tooltip = tooltip.Trim();
+
+            saveButton.SetEnabled(complete);
+            saveButton.tooltip = tooltip;
+        }
+
+        protected void RegisterLoadChange<TValueType>(BaseField<TValueType> element, EditorContainer<TValueType> editorContainer)
+        {
+            onLoad += () =>
+            {
+                element.value = editorContainer.Value;
+            };
+        }
+
+        protected void RegisterLoadChange<TValueType>(BaseField<System.Enum> element, EditorContainer<TValueType> editorContainer) where TValueType : System.Enum
+        {
+            onLoad += () =>
+            {
+                element.value = editorContainer.Value;
+            };
         }
     }
 

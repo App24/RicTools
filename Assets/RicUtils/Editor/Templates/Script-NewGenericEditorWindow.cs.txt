@@ -8,15 +8,10 @@ using UnityEditor;
     #ROOTNAMESPACEBEGIN#
 public class #SCRIPTNAME# : GenericEditorWindow<#SCRIPTABLEOBJECT#, #AVAILABLESCRIPTABLEOBJECT#>
 {
-    [MenuItem("Window/RicUtil Windows/#SCRIPTNAME#")]
+    [MenuItem("Window/RicUtils Windows/#SCRIPTNAME#")]
 	public static #SCRIPTNAME# ShowWindow()
     {
-        return GetWindow<#SCRIPTNAME#>();
-    }
-
-    protected override void CreateAsset(ref #SCRIPTABLEOBJECT# asset)
-    {
-
+        return GetWindow<#SCRIPTNAME#>("#SCRIPTNAME#");
     }
 
     protected override void DrawGUI()
@@ -25,6 +20,11 @@ public class #SCRIPTNAME# : GenericEditorWindow<#SCRIPTABLEOBJECT#, #AVAILABLESC
     }
 
     protected override void LoadScriptableObject(#SCRIPTABLEOBJECT# so, bool isNull)
+    {
+
+    }
+
+    protected override void CreateAsset(ref #SCRIPTABLEOBJECT# asset)
     {
 
     }

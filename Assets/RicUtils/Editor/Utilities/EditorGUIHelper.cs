@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace RicUtils.Editor.Utilities
 {
@@ -11,12 +13,14 @@ namespace RicUtils.Editor.Utilities
     {
         public const float LABEL_WIDTH = 125;
 
-        public static GUIStyle labelStyle = GUI.skin.label;
+        public static GUIStyle labelStyle;
 
-        public static GUILayoutOption[] labelGUILayoutOptions = new GUILayoutOption[] { GUILayout.MaxWidth(LABEL_WIDTH) };
+        public static GUILayoutOption[] labelGUILayoutOptions;
 
         public static void DrawLabel(string text)
         {
+            if (labelStyle == null) ResetLabelStyle();
+            if (labelGUILayoutOptions == null) ResetLabelGUILayoutOptions();
             EditorGUILayout.LabelField(text, labelStyle, labelGUILayoutOptions);
         }
 
@@ -30,184 +34,375 @@ namespace RicUtils.Editor.Utilities
             labelGUILayoutOptions = new GUILayoutOption[] { GUILayout.MaxWidth(LABEL_WIDTH) };
         }
 
-        public static void DrawTitle(string text)
+        public static ObjectField AddObjectField<T>(this VisualElement root, EditorContainer<T> data, string text = "Object Field", System.Action onSelectionChange = null, bool allowScene = false) where T : Object
         {
-            GUILayout.BeginHorizontal();
-            labelStyle = new GUIStyle(GUI.skin.label)
+            var objectField = new ObjectField()
             {
-                alignment = TextAnchor.MiddleCenter,
-                fontSize = 15,
-                fontStyle = FontStyle.Bold
+                label = text,
+                allowSceneObjects = allowScene,
+                objectType = typeof(T),
+                value = data.Value,
             };
-            labelGUILayoutOptions = new GUILayoutOption[]
+
+            objectField.RegisterValueChangedCallback(callback =>
             {
-                GUILayout.ExpandWidth(true)
+                data.Value = callback.newValue as T;
+                onSelectionChange?.Invoke();
+            });
+
+            root.Add(objectField);
+
+            return objectField;
+        }
+
+        public static EnumField AddEnumField<T>(this VisualElement root, EditorContainer<T> data, string text = "Enum Popup", System.Action onSelectionChange = null) where T : System.Enum
+        {
+            var enumField = new EnumField()
+            {
+                value = data.Value,
+                label = text
             };
-            DrawLabel(text);
-            GUILayout.EndHorizontal();
-            ResetLabelStyle();
-            ResetLabelGUILayoutOptions();
+
+            enumField.Init(data.Value);
+
+            enumField.RegisterValueChangedCallback(callback =>
+            {
+                data.Value = (T)callback.newValue;
+                onSelectionChange?.Invoke();
+            });
+
+            root.Add(enumField);
+
+            return enumField;
         }
 
-        public static void AddIndentAmount(float amountPerIndent = LABEL_WIDTH)
+        public static TextField AddTextField(this VisualElement root, EditorContainer<string> data, string text = "String", System.Action onSelectionChange = null)
         {
-            GUILayout.Space(EditorGUI.indentLevel * amountPerIndent);
+            var textField = new TextField()
+            {
+                value = data.Value,
+                label = text,
+            };
+
+            textField.RegisterValueChangedCallback(callback =>
+            {
+                data.Value = callback.newValue;
+                onSelectionChange?.Invoke();
+            });
+
+            root.Add(textField);
+
+            return textField;
         }
 
-        public static void DrawStringInput(ref string id, string text = "String", System.Action onSelectionChange = null)
+        public static TextField AddTextBox(this VisualElement root, EditorContainer<string> data, string text = "String", System.Action onSelectionChange = null)
         {
-            var previous = id;
-            GUILayout.BeginHorizontal();
-            DrawLabel(text);
-            id = EditorGUILayout.TextField(id);
-            GUILayout.EndHorizontal();
-            if (previous != id) onSelectionChange?.Invoke();
+            var textField = root.AddTextField(data, text, onSelectionChange);
+
+            textField.multiline = true;
+
+            return textField;
         }
 
-        public static void DrawStringTextBox(ref string id, ref Vector2 scroll, string text = "String", System.Action onSelectionChange = null)
+        public static ColorField AddColorField(this VisualElement root, EditorContainer<Color> data, string text = "Color", bool showAlpha = true, bool hdr = false, System.Action onSelectionChange = null)
         {
-            var previous = id;
-            GUILayout.BeginHorizontal();
-            DrawLabel(text);
-            scroll = EditorGUILayout.BeginScrollView(scroll, GUILayout.Height(105));
-            id = EditorGUILayout.TextArea(id, GUILayout.Height(100));
-            EditorGUILayout.EndScrollView();
-            GUILayout.EndHorizontal();
-            if (previous != id) onSelectionChange?.Invoke();
+            var colorField = new ColorField()
+            {
+                label = text,
+                value = data.Value,
+                showAlpha = showAlpha,
+                hdr = hdr,
+            };
+
+            colorField.RegisterValueChangedCallback(callback =>
+            {
+                data.Value = callback.newValue;
+                onSelectionChange?.Invoke();
+            });
+
+            root.Add(colorField);
+
+            return colorField;
         }
 
-        public static void DrawObjectField<T>(ref T data, string text = "Object Field", System.Action onSelectionChange = null, bool allowScene = false) where T : Object
+        public static FloatField AddFloatField(this VisualElement root, EditorContainer<float> data, string text = "Float", System.Action onSelectionChange = null)
         {
-            var previous = data;
-            GUILayout.BeginHorizontal();
-            DrawLabel(text);
-            data = (T)EditorGUILayout.ObjectField(data, typeof(T), allowScene);
-            GUILayout.EndHorizontal();
-            if (previous != data) onSelectionChange?.Invoke();
+            var floatField = new FloatField()
+            {
+                label = text,
+                value = data.Value,
+            };
+
+            floatField.RegisterValueChangedCallback(callback =>
+            {
+                data.Value = callback.newValue;
+                onSelectionChange?.Invoke();
+            });
+
+            root.Add(floatField);
+
+            return floatField;
         }
 
-        public static void DrawSeparator()
+        public static IntegerField AddIntField(this VisualElement root, EditorContainer<int> data, string text = "Int", System.Action onSelectionChange = null)
         {
-            DrawSeparator(Color.grey);
+            var intField = new IntegerField()
+            {
+                label = text,
+                value = data.Value,
+            };
+
+            intField.RegisterValueChangedCallback(callback =>
+            {
+                data.Value = callback.newValue;
+                onSelectionChange?.Invoke();
+            });
+
+            root.Add(intField);
+
+            return intField;
         }
 
-        public static void DrawSeparator(Color color)
+        public static Toggle AddToggle(this VisualElement root, EditorContainer<bool> data, string text = "Boolean", System.Action onSelectionChange = null)
         {
-            GUIStyle horizontalLine = new GUIStyle();
-            horizontalLine.normal.background = EditorGUIUtility.whiteTexture;
-            horizontalLine.margin = new RectOffset(0, 0, 4, 4);
-            horizontalLine.fixedHeight = 1;
+            var toggle = new Toggle()
+            {
+                label = text,
+                value = data.Value,
+            };
 
-            var c = GUI.color;
-            GUI.color = color;
-            GUILayout.Box(GUIContent.none, horizontalLine);
-            GUI.color = c;
+            toggle.RegisterValueChangedCallback(callback =>
+            {
+                data.Value = callback.newValue;
+                onSelectionChange?.Invoke();
+            });
+
+            root.Add(toggle);
+
+            return toggle;
         }
 
-        public static void DrawEnumPopup<T>(ref T data, string text = "Enum Popup", System.Action onSelectionChange = null, bool allowScene = false) where T : System.Enum
+        public static Vector3Field AddVector3Field(this VisualElement root, EditorContainer<Vector3> data, string text = "Vector 3", System.Action onSelectionChange = null)
         {
-            var previous = data;
-            GUILayout.BeginHorizontal();
-            DrawLabel(text);
-            data = (T)EditorGUILayout.EnumPopup(data);
-            GUILayout.EndHorizontal();
-            if (!previous.Equals(data)) onSelectionChange?.Invoke();
+            var field = new Vector3Field()
+            {
+                label = text,
+                value = data.Value,
+            };
+
+            field.RegisterValueChangedCallback(callback =>
+            {
+                data.Value = callback.newValue;
+                onSelectionChange?.Invoke();
+            });
+
+            root.Add(field);
+
+            return field;
         }
 
-        public static void DrawPreviewModel(UnityEditor.Editor gameObjectEditor)
+        public static Vector2Field AddVector2Field(this VisualElement root, EditorContainer<Vector2> data, string text = "Vector 2", System.Action onSelectionChange = null)
+        {
+            var field = new Vector2Field()
+            {
+                label = text,
+                value = data.Value,
+            };
+
+            field.RegisterValueChangedCallback(callback =>
+            {
+                data.Value = callback.newValue;
+                onSelectionChange?.Invoke();
+            });
+
+            root.Add(field);
+
+            return field;
+        }
+
+        public static Vector3IntField AddVector3IntField(this VisualElement root, EditorContainer<Vector3Int> data, string text = "Vector 3 Int", System.Action onSelectionChange = null)
+        {
+            var field = new Vector3IntField()
+            {
+                label = text,
+                value = data.Value,
+            };
+
+            field.RegisterValueChangedCallback(callback =>
+            {
+                data.Value = callback.newValue;
+                onSelectionChange?.Invoke();
+            });
+
+            root.Add(field);
+
+            return field;
+        }
+
+        public static Vector2IntField AddVector2IntField(this VisualElement root, EditorContainer<Vector2Int> data, string text = "Vector 2 Int", System.Action onSelectionChange = null)
+        {
+            var field = new Vector2IntField()
+            {
+                label = text,
+                value = data.Value,
+            };
+
+            field.RegisterValueChangedCallback(callback =>
+            {
+                data.Value = callback.newValue;
+                onSelectionChange?.Invoke();
+            });
+
+            root.Add(field);
+
+            return field;
+        }
+
+        public static Slider AddSlider(this VisualElement root, EditorContainer<float> data, float lowValue, float highValue, string text = "Slider", System.Action onSelectionChange = null)
+        {
+            var field = new Slider()
+            {
+                label = text,
+                value = data.Value,
+                lowValue = lowValue,
+                highValue = highValue,
+                showInputField = true,
+            };
+
+            field.RegisterValueChangedCallback(callback =>
+            {
+                data.Value = callback.newValue;
+                onSelectionChange?.Invoke();
+            });
+
+            root.Add(field);
+
+            return field;
+        }
+
+        public static SliderInt AddSliderInt(this VisualElement root, EditorContainer<int> data, int lowValue, int highValue, string text = "Slider Int", System.Action onSelectionChange = null)
+        {
+            var field = new SliderInt()
+            {
+                label = text,
+                value = data.Value,
+                lowValue = lowValue,
+                highValue = highValue,
+                showInputField = true,
+            };
+
+            field.RegisterValueChangedCallback(callback =>
+            {
+                data.Value = callback.newValue;
+                onSelectionChange?.Invoke();
+            });
+
+            root.Add(field);
+
+            return field;
+        }
+
+        public static CurveField AddCurveField(this VisualElement root, EditorContainer<AnimationCurve> data, string text = "Curve", System.Action onSelectionChange = null)
+        {
+            var field = new CurveField()
+            {
+                label = text,
+                value = data.Value,
+            };
+
+            field.RegisterValueChangedCallback(callback =>
+            {
+                data.Value = callback.newValue;
+                onSelectionChange?.Invoke();
+            });
+
+            root.Add(field);
+
+            return field;
+        }
+
+        public static PropertyField AddPropertyField(this VisualElement root, SerializedProperty data, string text = "Property Field", System.Action onSelectionChange = null)
+        {
+            var field = new PropertyField(data)
+            {
+                label = text
+            };
+
+            field.RegisterValueChangeCallback(callback =>
+            {
+                data.serializedObject.ApplyModifiedProperties();
+                onSelectionChange?.Invoke();
+            });
+
+            root.Add(field);
+            root.Bind(data.serializedObject);
+
+            return field;
+        }
+
+        /*public static void DrawPreviewModel(UnityEditor.Editor gameObjectEditor)
         {
             gameObjectEditor.OnPreviewGUI(GUILayoutUtility.GetRect(128, 128), EditorStyles.colorField);
             gameObjectEditor.ReloadPreviewInstances();
+        }*/
+
+        public static Button AddButton(this VisualElement root, string text = "Button", System.Action onClick = null)
+        {
+            var button = new Button(onClick)
+            {
+                text = text
+            };
+
+            root.Add(button);
+
+            return button;
         }
 
-        public static void DrawColorField(ref Color color, bool allowAlpha = true, string text = "Color", System.Action onSelectionChange = null)
+        public static VisualElement AddSeparator(this VisualElement root)
         {
-            var previous = color;
-            GUILayout.BeginHorizontal();
-            DrawLabel(text);
-            color = EditorGUILayout.ColorField(color);
-            if (!allowAlpha)
-                color.a = 1;
-            GUILayout.EndHorizontal();
-            if (previous != color) onSelectionChange?.Invoke();
+            return root.AddSeparator(Color.grey);
         }
 
-        public static void DrawFloat(ref float value, string text = "Float", System.Action onSelectionChange = null)
+        public static VisualElement AddSeparator(this VisualElement root, Color color)
         {
-            var previous = value;
-            GUILayout.BeginHorizontal();
-            DrawLabel(text);
-            value = EditorGUILayout.FloatField(value);
-            GUILayout.EndHorizontal();
-            if (previous != value) onSelectionChange?.Invoke();
+            var box = new Image();
+
+            box.style.backgroundImage = EditorGUIUtility.whiteTexture;
+            box.style.unityBackgroundImageTintColor = color;
+
+            box.style.marginTop = 4;
+            box.style.marginBottom = 4;
+
+            box.style.height = 1;
+
+            box.focusable = false;
+
+            root.Add(box);
+
+            return box;
         }
 
-        public static void DrawVector3(ref Vector3 value, string text = "Vector 3", System.Action onSelectionChange = null)
+        public static Label AddLabel(this VisualElement root, string text)
         {
-            var previous = value;
-            GUILayout.BeginHorizontal();
-            DrawLabel(text);
-            value = EditorGUILayout.Vector3Field(new GUIContent(), value);
-            GUILayout.EndHorizontal();
-            if (previous != value) onSelectionChange?.Invoke();
+            var label = new Label()
+            {
+                text = text
+            };
+
+            root.Add(label);
+
+            return label;
         }
 
-        public static void DrawInt(ref int value, string text = "Int", System.Action onSelectionChange = null)
+        public static Label AddTitle(this VisualElement root, string text)
         {
-            var previous = value;
-            GUILayout.BeginHorizontal();
-            DrawLabel(text);
-            value = EditorGUILayout.IntField(value);
-            GUILayout.EndHorizontal();
-            if (previous != value) onSelectionChange?.Invoke();
-        }
+            var label = root.AddLabel(text);
 
-        public static void DrawToggle(ref bool value, string text = "Boolean", System.Action onSelectionChange = null)
-        {
-            var previous = value;
-            GUILayout.BeginHorizontal();
-            DrawLabel(text);
-            value = EditorGUILayout.Toggle(value);
-            GUILayout.EndHorizontal();
-            if (previous != value) onSelectionChange?.Invoke();
-        }
+            label.style.fontSize = 15;
+            label.style.alignSelf = Align.Center;
+            label.style.unityFontStyleAndWeight = FontStyle.Bold;
 
-        public static void DrawSlider(ref float value, float min, float max, string text = "Slider", System.Action onSelectionChange = null)
-        {
-            var previous = value;
-            GUILayout.BeginHorizontal();
-            DrawLabel(text);
-            value = EditorGUILayout.Slider(value, min, max);
-            GUILayout.EndHorizontal();
-            if (previous != value) onSelectionChange?.Invoke();
-        }
-
-        public static void DrawSliderInt(ref int value, int min, int max, string text = "Int", System.Action onSelectionChange = null)
-        {
-            var previous = value;
-            GUILayout.BeginHorizontal();
-            DrawLabel(text);
-            value = EditorGUILayout.IntSlider(value, min, max);
-            GUILayout.EndHorizontal();
-            if (previous != value) onSelectionChange?.Invoke();
-        }
-
-        public static void DrawAnimationCurve(ref AnimationCurve animationCurve, string text = "Animation Curve", System.Action onSelectionChange = null)
-        {
-            var previous = animationCurve;
-            GUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(text, GUILayout.MaxWidth(125));
-            animationCurve = EditorGUILayout.CurveField(animationCurve);
-            GUILayout.EndHorizontal();
-            if (previous != animationCurve) onSelectionChange?.Invoke();
-        }
-
-        public static void DrawPropertyField(SerializedProperty serializedProperty, string text)
-        {
-            GUILayout.BeginHorizontal();
-            DrawLabel(text);
-            EditorGUILayout.PropertyField(serializedProperty);
-            GUILayout.EndHorizontal();
+            return label;
         }
     }
 }

@@ -82,7 +82,10 @@ namespace RicUtils.Editor.Utilities
                     }
                     var temp = showWindow.Invoke(null, null);
                     var data = System.Convert.ChangeType(temp, keyValuePair.EditorType);
-                    keyValuePair.EditorType.GetRecursiveField("scriptableObject", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance).SetValue(data, so);
+                    {
+                        var editorContainer = keyValuePair.EditorType.GetRecursiveField("scriptableObject", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance).GetValue(data);
+                        editorContainer.GetType().GetProperty("Value").SetValue(editorContainer, so);
+                    }
                     keyValuePair.EditorType.GetRecursiveMethod("LoadScriptableObjectInternal", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(data, new object[] { so });
                     return true;
                 }
