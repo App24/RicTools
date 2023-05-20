@@ -85,6 +85,8 @@ namespace RicUtils.Editor.Windows
             }
 
             rootVisualElement.AddButton("Create", CreateAssets);
+
+            soNameTextField.Focus();
         }
 
         private void UpdateTextFields()
@@ -108,17 +110,19 @@ namespace RicUtils.Editor.Windows
 
             ToolUtilities.TryGetActiveFolderPath(out string path);
 
-            string soName = scriptableObjectName;
-            string availableSo = "Available" + availableScriptableObjectName;
+            string soName = scriptableObjectName + "ScriptableObject";
+            string availableSo = "Available" + availableScriptableObjectName + "ScriptableObject";
             string editorWindow = editorWindowName + "EditorWindow";
 
             string rootNamespace = CompilationPipeline.GetAssemblyRootNamespaceFromScriptPath(path + "/temp.cs");
+
+            var dll = CompilationPipeline.GetAssemblyNameFromScriptPath(path + "/temp.cs").Split('.')[0];
 
             if (!string.IsNullOrEmpty(rootNamespace)) { rootNamespace += "."; }
 
             {
 
-                string defaultNewFileName = Path.Combine(path, scriptableObjectName + ".cs");
+                string defaultNewFileName = Path.Combine(path, soName + ".cs");
 
                 string templatePath = PathConstants.TEMPLATES_PATH + "/Script-NewGenericScriptableObject.cs.txt";
 
@@ -158,9 +162,9 @@ namespace RicUtils.Editor.Windows
                 //ToolUtilities.CreateNewScript(endAction, defaultNewFileName, templatePath);
             }
 
-            EditorPrefs.SetString("CustomSo", $"{rootNamespace}{soName}");
-            EditorPrefs.SetString("AvailableSo", $"{rootNamespace}{availableSo}");
-            EditorPrefs.SetString("EditorWindow", $"{rootNamespace}{editorWindow}");
+            EditorPrefs.SetString("CustomSo", $"{rootNamespace}{soName},{dll}");
+            EditorPrefs.SetString("AvailableSo", $"{rootNamespace}{availableSo},{dll}");
+            EditorPrefs.SetString("EditorWindow", $"{rootNamespace}{editorWindow},{dll}");
         }
 
         private void ToggleWarning(bool visible)
@@ -185,19 +189,24 @@ namespace RicUtils.Editor.Windows
         {
             if (EditorPrefs.GetBool("ReadyToUpdateSettings"))
             {
-                EditorPrefs.SetBool("ReadyToUpdateSettings", false);
 
                 var so = EditorPrefs.GetString("CustomSo");
                 var available = EditorPrefs.GetString("AvailableSo");
                 var window = EditorPrefs.GetString("EditorWindow");
 
+                var soType = System.Type.GetType(so);
+                var availableType = System.Type.GetType(available);
+                var windowType = System.Type.GetType(window);
+
+                EditorPrefs.SetBool("ReadyToUpdateSettings", false);
+
                 var list = new List<ScriptableEditor>(RicUtils_EditorSettings.instance.m_scriptableEditors);
 
                 list.Add(new ScriptableEditor()
                 {
-                    customScriptableObjectType = new TypeReferences.TypeReference(System.Type.GetType(so)),
-                    availableScriptableObjectType = new TypeReferences.TypeReference(System.Type.GetType(available)),
-                    editorType = new TypeReferences.TypeReference(System.Type.GetType(window)),
+                    customScriptableObjectType = new TypeReferences.TypeReference(soType),
+                    availableScriptableObjectType = new TypeReferences.TypeReference(availableType),
+                    editorType = new TypeReferences.TypeReference(windowType),
                 });
 
                 RicUtils_EditorSettings.instance.m_scriptableEditors = list.ToArray();
