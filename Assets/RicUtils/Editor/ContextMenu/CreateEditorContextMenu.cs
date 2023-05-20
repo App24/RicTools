@@ -12,7 +12,7 @@ namespace RicUtils.Editor.ContextMenu
     public static class CreateEditorContextMenu
     {
 
-        [MenuItem("Assets/Create/Editor Window", priority = -8)]
+        /*[MenuItem("Assets/Create/Editor Window", priority = -8)]
         public static void Create()
         {
             string scriptableObject = "";
@@ -60,7 +60,7 @@ namespace RicUtils.Editor.ContextMenu
             }
 
             return hasGenericScriptableObject && hasAvailableScriptableObject;
-        }
+        }*/
     }
 
     internal class DoCreateEditorAsset : DoCreateScriptAsset

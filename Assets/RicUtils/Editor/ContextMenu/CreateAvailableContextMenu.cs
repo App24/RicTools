@@ -11,7 +11,7 @@ namespace RicUtils.Editor.ContextMenu
 {
     public static class CreateAvailableContextMenu
     {
-        [MenuItem("Assets/Create/Available Scriptable Object", priority = -9)]
+        /*[MenuItem("Assets/Create/Available Scriptable Object", priority = -9)]
         public static void Create()
         {
             var mono = Selection.activeObject as MonoScript;
@@ -38,7 +38,7 @@ namespace RicUtils.Editor.ContextMenu
             if (mono.GetClass() == null) return false;
             if (!mono.GetClass().IsSubclassOf(typeof(GenericScriptableObject))) return false;
             return true;
-        }
+        }*/
     }
 
     internal class DoCreateAvailableAsset : DoCreateScriptAsset

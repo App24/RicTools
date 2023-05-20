@@ -57,8 +57,8 @@ namespace RicUtils.Editor.Windows
         private void DrawIDInput()
         {
             idTextField = rootVisualElement.AddTextField(spawnableId, "ID");
-			
-			RegisterCheckCompletion(idTextField);
+
+            RegisterCheckCompletion(idTextField);
         }
 
         protected abstract void DrawGUI();

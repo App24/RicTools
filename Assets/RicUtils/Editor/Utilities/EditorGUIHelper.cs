@@ -83,7 +83,7 @@ namespace RicUtils.Editor.Utilities
             return enumField;
         }
 
-        public static TextField AddTextField(this VisualElement root, EditorContainer<string> data, string text = "String", System.Action onSelectionChange = null)
+        public static TextField AddTextField(this VisualElement root, EditorContainer<string> data, string text = "String", System.Action<string> onSelectionChange = null)
         {
             var textField = new TextField()
             {
@@ -94,7 +94,7 @@ namespace RicUtils.Editor.Utilities
             textField.RegisterValueChangedCallback(callback =>
             {
                 data.Value = callback.newValue;
-                onSelectionChange?.Invoke();
+                onSelectionChange?.Invoke(callback.previousValue);
             });
 
             root.Add(textField);
@@ -102,7 +102,7 @@ namespace RicUtils.Editor.Utilities
             return textField;
         }
 
-        public static TextField AddTextBox(this VisualElement root, EditorContainer<string> data, string text = "String", System.Action onSelectionChange = null)
+        public static TextField AddTextBox(this VisualElement root, EditorContainer<string> data, string text = "String", System.Action<string> onSelectionChange = null)
         {
             var textField = root.AddTextField(data, text, onSelectionChange);
 
