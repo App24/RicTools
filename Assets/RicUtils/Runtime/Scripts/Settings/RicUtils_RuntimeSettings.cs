@@ -17,7 +17,7 @@ namespace RicUtils.Settings
         {
             get { return instance.m_singletonManagers; }
         }
-        public SingletonManager[] m_singletonManagers;
+        public SingletonManager[] m_singletonManagers = new SingletonManager[] { };
 
         public static RicUtils_RuntimeSettings instance
         {

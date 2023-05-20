@@ -52,8 +52,7 @@ namespace RicUtils.Editor.ContextMenu
 
             foreach (var obj in Selection.objects)
             {
-                if (obj is not MonoScript) return false;
-                var mono = obj as MonoScript;
+                if (obj is not MonoScript mono) return false;
                 var @class = mono.GetClass();
                 if (mono.GetClass() == null) continue;
                 if (@class.IsSubclassOf(typeof(GenericScriptableObject))) hasGenericScriptableObject = true;

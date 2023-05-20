@@ -14,14 +14,14 @@ namespace RicUtils.Editor.Settings
 
         public static string version
         {
-            get { return "1.5.0"; }
+            get { return "1.5.1"; }
         }
 
         public static ScriptableEditor[] scriptableEditors
         {
             get { return instance.m_scriptableEditors; }
         }
-        public ScriptableEditor[] m_scriptableEditors;
+        public ScriptableEditor[] m_scriptableEditors = new ScriptableEditor[] { };
 
         public static RicUtils_EditorSettings instance
         {

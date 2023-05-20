@@ -11,13 +11,13 @@ using UnityEngine.UIElements;
 
 namespace RicUtils.Editor.Windows
 {
-    public abstract class GenericEditorWindow<T, D> : EditorWindow where T : GenericScriptableObject where D : AvailableScriptableObject<T>
+    public abstract class GenericEditorWindow<GenericSoType, AvailableSoType> : EditorWindow where GenericSoType : GenericScriptableObject where AvailableSoType : AvailableScriptableObject<GenericSoType>
     {
-        protected EditorContainer<T> scriptableObject = new EditorContainer<T>();
+        protected EditorContainer<GenericSoType> scriptableObject = new EditorContainer<GenericSoType>();
 
-        protected virtual string AvailableSOPath => RicUtilities.GetAvailableScriptableObjectPath(typeof(D));
+        protected virtual string AvailableSOPath => RicUtilities.GetAvailableScriptableObjectPath(typeof(AvailableSoType));
 
-        protected virtual string SavePath => RicUtilities.GetScriptableObjectPath(typeof(T));
+        protected virtual string SavePath => RicUtilities.GetScriptableObjectPath(typeof(GenericSoType));
 
         protected EditorContainer<string> spawnableId = new EditorContainer<string>();
 
@@ -56,10 +56,9 @@ namespace RicUtils.Editor.Windows
 
         private void DrawIDInput()
         {
-            idTextField = rootVisualElement.AddTextField(spawnableId, "ID", () =>
-            {
-                CheckCompletion();
-            });
+            idTextField = rootVisualElement.AddTextField(spawnableId, "ID");
+			
+			RegisterCheckCompletion(idTextField);
         }
 
         protected abstract void DrawGUI();
@@ -70,13 +69,13 @@ namespace RicUtils.Editor.Windows
 
             saveButton = rootVisualElement.AddButton("Save Asset", () =>
             {
-                D available = GetAvailableAsset();
+                AvailableSoType available = GetAvailableAsset();
 
-                List<T> items = new List<T>(available.items);
+                List<GenericSoType> items = new List<GenericSoType>(available.items);
 
                 int index = -1;
 
-                var item = AssetDatabase.LoadAssetAtPath<T>($"{SavePath}/{spawnableId}.asset");
+                var item = AssetDatabase.LoadAssetAtPath<GenericSoType>($"{SavePath}/{spawnableId}.asset");
 
                 if (item != null)
                 {
@@ -89,7 +88,7 @@ namespace RicUtils.Editor.Windows
                 }
                 else
                 {
-                    item = ScriptableObject.CreateInstance<T>();
+                    item = ScriptableObject.CreateInstance<GenericSoType>();
                 }
 
 
@@ -126,35 +125,35 @@ namespace RicUtils.Editor.Windows
             });
         }
 
-        private D GetAvailableAsset()
+        private AvailableSoType GetAvailableAsset()
         {
             RicUtilities.CreateAssetFolder(AvailableSOPath);
 
-            D available = AssetDatabase.LoadAssetAtPath<D>(AvailableSOPath);
+            AvailableSoType available = AssetDatabase.LoadAssetAtPath<AvailableSoType>(AvailableSOPath);
             if (available == null)
             {
 
-                available = ScriptableObject.CreateInstance<D>();
+                available = ScriptableObject.CreateInstance<AvailableSoType>();
 
-                available.items = new T[] { };
+                available.items = new GenericSoType[] { };
 
                 AssetDatabase.CreateAsset(available, AvailableSOPath);
 
                 AssetDatabase.SaveAssets();
 
-                available = AssetDatabase.LoadAssetAtPath<D>(AvailableSOPath);
+                available = AssetDatabase.LoadAssetAtPath<AvailableSoType>(AvailableSOPath);
             }
             return available;
         }
 
-        private void SaveAsset(T asset, string saveName)
+        private void SaveAsset(GenericSoType asset, string saveName)
         {
             RicUtilities.CreateAssetFolder(SavePath);
             if (!AssetDatabase.Contains(asset))
                 AssetDatabase.CreateAsset(asset, $"{SavePath}/{saveName}.asset");
         }
 
-        private void LoadScriptableObjectInternal(T so)
+        private void LoadScriptableObjectInternal(GenericSoType so)
         {
 
             bool isNull = so == null;
@@ -175,9 +174,9 @@ namespace RicUtils.Editor.Windows
             OnLoadInternal();
         }
 
-        protected abstract void LoadScriptableObject(T so, bool isNull);
+        protected abstract void LoadScriptableObject(GenericSoType so, bool isNull);
 
-        protected abstract void CreateAsset(ref T asset);
+        protected abstract void CreateAsset(ref GenericSoType asset);
 
         private IEnumerable<CompleteCriteria> GetInbuiltCompleteCriteria()
         {
@@ -211,7 +210,7 @@ namespace RicUtils.Editor.Windows
 
         }
 
-        protected void CheckCompletion()
+        private void CheckCompletion()
         {
             List<CompleteCriteria> criteria = new List<CompleteCriteria>(GetInbuiltCompleteCriteria());
             criteria.AddRange(GetCompleteCriteria());
@@ -231,6 +230,14 @@ namespace RicUtils.Editor.Windows
             saveButton.tooltip = tooltip;
         }
 
+        protected void RegisterCheckCompletion<TValueType>(INotifyValueChanged<TValueType> control)
+        {
+            control.RegisterValueChangedCallback(callback =>
+            {
+                CheckCompletion();
+            });
+        }
+
         protected void RegisterLoadChange<TValueType>(BaseField<TValueType> element, EditorContainer<TValueType> editorContainer)
         {
             onLoad += () =>
@@ -240,6 +247,14 @@ namespace RicUtils.Editor.Windows
         }
 
         protected void RegisterLoadChange<TValueType>(BaseField<System.Enum> element, EditorContainer<TValueType> editorContainer) where TValueType : System.Enum
+        {
+            onLoad += () =>
+            {
+                element.value = editorContainer.Value;
+            };
+        }
+
+        protected void RegisterLoadChange<TValueType>(ObjectField element, EditorContainer<TValueType> editorContainer) where TValueType : Object
         {
             onLoad += () =>
             {

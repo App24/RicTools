@@ -55,6 +55,13 @@ namespace RicUtils.Editor.Utilities
             return objectField;
         }
 
+        public static ObjectField AddTextureField(this VisualElement root, EditorContainer<Texture2D> data, string text = "Object Field", System.Action onSelectionChange = null)
+        {
+            var field = root.AddObjectField(data, text, onSelectionChange);
+
+            return field;
+        }
+
         public static EnumField AddEnumField<T>(this VisualElement root, EditorContainer<T> data, string text = "Enum Popup", System.Action onSelectionChange = null) where T : System.Enum
         {
             var enumField = new EnumField()

@@ -24,8 +24,8 @@ namespace RicUtils
         public const string EDITOR_SETTINGS_PATH = ASSETS_FOLDER + "/" + RICUTILS_FOLDER + "/" + EDITOR_FOLDER + "/" + RESOURCES_FOLDER;
         public const string RUNTIME_SETTINGS_PATH = ASSETS_FOLDER + "/" + RICUTILS_FOLDER + "/" + RESOURCES_FOLDER;
 
-        public const string EDITOR_SETTINGS_NAME = "RicUtils Editor Settings";
-        public const string RUNTIME_SETTINGS_NAME = "RicUtils Settings";
+        public const string EDITOR_SETTINGS_NAME = "RicUtils_Editor_Settings";
+        public const string RUNTIME_SETTINGS_NAME = "RicUtils_Settings";
 
         public const string AVAILABLES_FOLDER = ASSETS_FOLDER + "/" + SCRIPTABLES_FOLDER + "/" + RESOURCES_FOLDER + "/" + RESOURCES_AVAILABLES_FOLDER;
         public const string RESOURCES_AVAILABLES_FOLDER = "Availables";
