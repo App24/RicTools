@@ -330,9 +330,9 @@ namespace RicUtils.Editor.Utilities
             gameObjectEditor.ReloadPreviewInstances();
         }*/
 
-        public static Button AddButton(this VisualElement root, string text = "Button", System.Action onClick = null)
+        public static AdvButton AddButton(this VisualElement root, string text = "Button", System.Action onClick = null)
         {
-            var button = new Button(onClick)
+            var button = new AdvButton(onClick)
             {
                 text = text
             };

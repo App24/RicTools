@@ -6,6 +6,6 @@ namespace RicUtils.Editor.Elements
     {
         public string name;
         public VisualElement container;
-        public Button tabButton;
+        public AdvButton tabButton;
     }
 }
