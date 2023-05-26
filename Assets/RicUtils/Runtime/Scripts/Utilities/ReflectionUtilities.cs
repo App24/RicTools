@@ -9,49 +9,49 @@ namespace RicUtils.Utilities
 {
     public static class ReflectionUtilities
     {
-        public static IEnumerable<MethodInfo> GetRecursiveMethods(this Type type, BindingFlags bindingFlags)
+        public static IEnumerable<MethodInfo> GetMethodsRecursive(this Type type, BindingFlags bindingFlags)
         {
             IEnumerable<MethodInfo> methods = type.GetMethods(bindingFlags);
 
             if (type.BaseType != null)
             {
-                methods = methods.Concat(type.BaseType.GetRecursiveMethods(bindingFlags));
+                methods = methods.Concat(type.BaseType.GetMethodsRecursive(bindingFlags));
             }
 
             return methods;
         }
 
-        public static MethodInfo GetRecursiveMethod(this Type type, string name, BindingFlags bindingFlags)
+        public static MethodInfo GetMethodRecursive(this Type type, string name, BindingFlags bindingFlags)
         {
             var method = type.GetMethod(name, bindingFlags);
 
             if (method == null && type.BaseType != null)
             {
-                method = type.BaseType.GetRecursiveMethod(name, bindingFlags);
+                method = type.BaseType.GetMethodRecursive(name, bindingFlags);
             }
 
             return method;
         }
 
-        public static IEnumerable<FieldInfo> GetRecursiveFields(this Type type, BindingFlags bindingFlags)
+        public static IEnumerable<FieldInfo> GetFieldsRecursive(this Type type, BindingFlags bindingFlags)
         {
             IEnumerable<FieldInfo> methods = type.GetFields(bindingFlags);
 
             if (type.BaseType != null)
             {
-                methods = methods.Concat(type.BaseType.GetRecursiveFields(bindingFlags));
+                methods = methods.Concat(type.BaseType.GetFieldsRecursive(bindingFlags));
             }
 
             return methods;
         }
 
-        public static FieldInfo GetRecursiveField(this Type type, string name, BindingFlags bindingFlags)
+        public static FieldInfo GetFieldRecursive(this Type type, string name, BindingFlags bindingFlags)
         {
             var method = type.GetField(name, bindingFlags);
 
             if (method == null && type.BaseType != null)
             {
-                method = type.BaseType.GetRecursiveField(name, bindingFlags);
+                method = type.BaseType.GetFieldRecursive(name, bindingFlags);
             }
 
             return method;

@@ -1,11 +1,11 @@
 ﻿namespace RicUtils.Editor.Utilities
 {
-    public sealed class EditorContainer<T>
+    public sealed class EditorContainer<TValueType>
     {
-        public T Value { get; set; } = default;
+        public TValueType Value { get; set; } = default;
 
-        public static implicit operator T(EditorContainer<T> value) { return value.Value; }
-        public static explicit operator EditorContainer<T>(T value) { return new EditorContainer<T>() { Value = value }; }
+        public static implicit operator TValueType(EditorContainer<TValueType> value) { return value.Value; }
+        public static explicit operator EditorContainer<TValueType>(TValueType value) { return new EditorContainer<TValueType>() { Value = value }; }
 
         public bool IsNull()
         {

@@ -24,7 +24,7 @@ namespace RicUtils.Editor.Toolbar
                 {
                     available = ScriptableObject.CreateInstance(keyValuePair.AvailableScriptableObjectType);
                     var items = (IList)System.Activator.CreateInstance(typeof(List<>).MakeGenericType(keyValuePair.CustomScriptableObjectType));
-                    keyValuePair.AvailableScriptableObjectType.GetRecursiveMethod("SetItems", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).Invoke(available, new object[] { items });
+                    keyValuePair.AvailableScriptableObjectType.GetMethodRecursive("SetItems", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).Invoke(available, new object[] { items });
 
                     AssetDatabase.CreateAsset(available, path);
 

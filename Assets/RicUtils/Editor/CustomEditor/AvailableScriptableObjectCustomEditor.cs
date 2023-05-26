@@ -77,7 +77,7 @@ namespace RicUtils.Editor.CustomEditor
                     {
                         items.RemoveAt(j);
                     }
-                    availableScriptableObjectType.GetRecursiveMethod("SetItems", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(availableScriptableObject, new object[] { items });
+                    availableScriptableObjectType.GetMethodRecursive("SetItems", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(availableScriptableObject, new object[] { items });
 
                     EditorUtility.SetDirty(availableScriptableObject);
                     AssetDatabase.SaveAssets();

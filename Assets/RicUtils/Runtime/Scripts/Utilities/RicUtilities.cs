@@ -12,7 +12,19 @@ namespace RicUtils.Utilities
     {
         public static T GetAvailableScriptableObject<T, D>() where T : AvailableScriptableObject<D> where D : GenericScriptableObject
         {
-            return Resources.Load<T>(PathConstants.RESOURCES_AVAILABLES_FOLDER + "/" + GetAvailableScriptableObjectName(typeof(T)));
+            var so = Resources.Load<T>(PathConstants.RESOURCES_AVAILABLES_FOLDER + "/" + GetAvailableScriptableObjectName(typeof(T)));
+
+#if UNITY_EDITOR
+            if (!so)
+            {
+                so = ScriptableObject.CreateInstance<T>();
+                CreateAssetFolder(PathConstants.RESOURCES_AVAILABLES_FOLDER);
+                AssetDatabase.CreateAsset(so, PathConstants.RESOURCES_AVAILABLES_FOLDER + "/" + GetAvailableScriptableObjectName(typeof(T)) + ".asset");
+                AssetDatabase.SaveAssets();
+            }
+#endif
+
+            return so;
         }
 
         public static string GetAvailableScriptableObjectName(System.Type type)
@@ -57,7 +69,7 @@ namespace RicUtils.Utilities
 #if UNITY_EDITOR
         public static void CreateAssetFolder(string folderPath)
         {
-            if (folderPath.EndsWith(".asset"))
+            if (Path.HasExtension(folderPath))
                 folderPath = Path.GetDirectoryName(folderPath);
             folderPath = folderPath.Replace("\\", "/");
             if (!AssetDatabase.IsValidFolder(folderPath))

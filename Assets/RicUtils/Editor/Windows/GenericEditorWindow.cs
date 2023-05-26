@@ -15,9 +15,9 @@ namespace RicUtils.Editor.Windows
     {
         protected EditorContainer<GenericSoType> scriptableObject = new EditorContainer<GenericSoType>();
 
-        protected virtual string AvailableSOPath => RicUtilities.GetAvailableScriptableObjectPath(typeof(AvailableSoType));
+        protected string AvailableSOPath => RicUtilities.GetAvailableScriptableObjectPath(typeof(AvailableSoType));
 
-        protected virtual string SavePath => RicUtilities.GetScriptableObjectPath(typeof(GenericSoType));
+        protected string SavePath => RicUtilities.GetScriptableObjectPath(typeof(GenericSoType));
 
         protected EditorContainer<string> spawnableId = new EditorContainer<string>();
 
@@ -39,8 +39,7 @@ namespace RicUtils.Editor.Windows
         private void CreateGUI()
         {
             onLoad = null;
-            VisualElement root = rootVisualElement;
-            soObjectField = root.AddObjectField(scriptableObject, "Scriptable Object", () =>
+            soObjectField = rootVisualElement.AddObjectField(scriptableObject, "Scriptable Object", () =>
             {
                 LoadScriptableObjectInternal(scriptableObject);
             });
@@ -63,7 +62,7 @@ namespace RicUtils.Editor.Windows
 
         protected abstract void DrawGUI();
 
-        private void DrawSaveDeleteButtons(bool checkExists = true)
+        private void DrawSaveDeleteButtons()
         {
             rootVisualElement.AddSeparator();
 
@@ -79,11 +78,8 @@ namespace RicUtils.Editor.Windows
 
                 if (item != null)
                 {
-                    if (checkExists)
-                    {
-                        if (!EditorUtility.DisplayDialog("Error", "There is an asset by that ID already, you sure you want to replace it?", "Continue", "Cancel"))
-                            return;
-                    }
+                    if (!EditorUtility.DisplayDialog("Error", "There is an asset by that ID already, you sure you want to replace it?", "Continue", "Cancel"))
+                        return;
                     index = items.IndexOf(item);
                 }
                 else

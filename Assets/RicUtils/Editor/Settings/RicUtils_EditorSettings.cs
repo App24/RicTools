@@ -14,7 +14,7 @@ namespace RicUtils.Editor.Settings
 
         public static string version
         {
-            get { return "1.5.1"; }
+            get { return "1.6.0"; }
         }
 
         public static ScriptableEditor[] scriptableEditors
@@ -29,7 +29,7 @@ namespace RicUtils.Editor.Settings
             {
                 if (RicUtils_EditorSettings.s_Instance == null)
                 {
-                    RicUtils_EditorSettings.s_Instance = Resources.Load<RicUtils_EditorSettings>(PathConstants.EDITOR_SETTINGS_NAME);
+                    RicUtils_EditorSettings.s_Instance = Resources.Load<RicUtils_EditorSettings>(PathConstants.EDITOR_SETTINGS_FILE_PATH);
                     if (!s_Instance)
                     {
                         s_Instance = ScriptableObject.CreateInstance<RicUtils_EditorSettings>();
@@ -47,7 +47,7 @@ namespace RicUtils.Editor.Settings
         {
             if (s_Instance == null)
             {
-                RicUtils_EditorSettings settings = Resources.Load<RicUtils_EditorSettings>(PathConstants.EDITOR_SETTINGS_NAME);
+                RicUtils_EditorSettings settings = Resources.Load<RicUtils_EditorSettings>(PathConstants.EDITOR_SETTINGS_FILE_PATH);
                 if (settings != null)
                     s_Instance = settings;
             }

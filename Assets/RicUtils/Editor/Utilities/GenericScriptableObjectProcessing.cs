@@ -32,7 +32,7 @@ namespace RicUtils.Editor.Utilities
                         items.Add(item);
                     }
                     items.Remove(temp);
-                    availableScriptableObjectType.GetRecursiveMethod("SetItems", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(availableScriptableObject, new object[] { items });
+                    availableScriptableObjectType.GetMethodRecursive("SetItems", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(availableScriptableObject, new object[] { items });
 
                     EditorUtility.SetDirty(availableScriptableObject);
 

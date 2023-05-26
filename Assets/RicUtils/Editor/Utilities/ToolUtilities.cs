@@ -2,12 +2,14 @@ using RicUtils.Editor.Settings;
 using RicUtils.ScriptableObjects;
 using RicUtils.Utilities;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Reflection;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEditor.ProjectWindowCallback;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace RicUtils.Editor.Utilities
 {
@@ -83,10 +85,10 @@ namespace RicUtils.Editor.Utilities
                     var temp = showWindow.Invoke(null, null);
                     var data = System.Convert.ChangeType(temp, keyValuePair.EditorType);
                     {
-                        var editorContainer = keyValuePair.EditorType.GetRecursiveField("scriptableObject", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance).GetValue(data);
+                        var editorContainer = keyValuePair.EditorType.GetFieldRecursive("scriptableObject", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance).GetValue(data);
                         editorContainer.GetType().GetProperty("Value").SetValue(editorContainer, so);
                     }
-                    keyValuePair.EditorType.GetRecursiveMethod("LoadScriptableObjectInternal", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(data, new object[] { so });
+                    keyValuePair.EditorType.GetMethodRecursive("LoadScriptableObjectInternal", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(data, new object[] { so });
                     return true;
                 }
             }
@@ -126,6 +128,22 @@ namespace RicUtils.Editor.Utilities
                 _ => EditorGUIUtility.IconContent("TextAsset Icon").image as Texture2D,
             }, instanceID: 0, endAction: endAction, pathName: defaultNewFileName, resourceFile: templatePath);
             AssetDatabase.Refresh();
+        }
+
+        public static void AddStylesheet(this VisualElement root, params string[] styleSheets)
+        {
+            foreach (var sheet in styleSheets)
+            {
+                var stylesheet = (StyleSheet)EditorGUIUtility.Load(sheet);
+
+                if (stylesheet == null)
+                {
+                    Debug.LogError($"Couldnt load stylesheet: '{sheet}'");
+                    continue;
+                }
+
+                root.styleSheets.Add(stylesheet);
+            }
         }
     }
 }

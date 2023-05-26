@@ -1,5 +1,5 @@
+using RicUtils.Editor.Elements;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
@@ -11,29 +11,6 @@ namespace RicUtils.Editor.Utilities
 {
     public static class EditorGUIHelper
     {
-        public const float LABEL_WIDTH = 125;
-
-        public static GUIStyle labelStyle;
-
-        public static GUILayoutOption[] labelGUILayoutOptions;
-
-        public static void DrawLabel(string text)
-        {
-            if (labelStyle == null) ResetLabelStyle();
-            if (labelGUILayoutOptions == null) ResetLabelGUILayoutOptions();
-            EditorGUILayout.LabelField(text, labelStyle, labelGUILayoutOptions);
-        }
-
-        public static void ResetLabelStyle()
-        {
-            labelStyle = GUI.skin.label;
-        }
-
-        public static void ResetLabelGUILayoutOptions()
-        {
-            labelGUILayoutOptions = new GUILayoutOption[] { GUILayout.MaxWidth(LABEL_WIDTH) };
-        }
-
         public static ObjectField AddObjectField<T>(this VisualElement root, EditorContainer<T> data, string text = "Object Field", System.Action onSelectionChange = null, bool allowScene = false) where T : Object
         {
             var objectField = new ObjectField()
@@ -365,6 +342,18 @@ namespace RicUtils.Editor.Utilities
             return button;
         }
 
+        public static Foldout AddFoldout(this VisualElement root, string text = "Foldout")
+        {
+            Foldout foldout = new Foldout()
+            {
+                text = text
+            };
+
+            root.Add(foldout);
+
+            return foldout;
+        }
+
         public static VisualElement AddSeparator(this VisualElement root)
         {
             return root.AddSeparator(Color.grey);
@@ -410,6 +399,13 @@ namespace RicUtils.Editor.Utilities
             label.style.unityFontStyleAndWeight = FontStyle.Bold;
 
             return label;
+        }
+
+        public static TabBar AddTabBar(this VisualElement root)
+        {
+            var tabBar = new TabBar(root);
+
+            return tabBar;
         }
     }
 }

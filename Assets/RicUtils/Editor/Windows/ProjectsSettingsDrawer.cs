@@ -47,14 +47,10 @@ namespace RicUtils.Editor.Windows
                 keywords = GetKeywords(),
                 titleBarGuiHandler = () =>
                 {
-                    EditorGUIHelper.labelGUILayoutOptions = new GUILayoutOption[] { };
-                    EditorGUIHelper.labelStyle = new GUIStyle(GUI.skin.label)
+                    EditorGUILayout.LabelField("Version: " + RicUtils_EditorSettings.version, new GUIStyle(GUI.skin.label)
                     {
                         alignment = TextAnchor.MiddleRight,
-                    };
-                    EditorGUIHelper.DrawLabel("Version: " + RicUtils_EditorSettings.version);
-                    EditorGUIHelper.ResetLabelGUILayoutOptions();
-                    EditorGUIHelper.ResetLabelStyle();
+                    });
                 }
             };
         }

@@ -19,7 +19,6 @@ namespace RicUtils.Editor.Settings
         public TypeReference availableScriptableObjectType;
 
         public System.Type CustomScriptableObjectType => customScriptableObjectType;
-        //public (System.Type, System.Type) Value => (availableScriptableObjectType, editorType);
 
         public System.Type EditorType => editorType;
 

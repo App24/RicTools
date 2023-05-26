@@ -25,7 +25,7 @@ namespace RicUtils.Settings
             {
                 if (RicUtils_RuntimeSettings.s_Instance == null)
                 {
-                    RicUtils_RuntimeSettings.s_Instance = Resources.Load<RicUtils_RuntimeSettings>(PathConstants.RUNTIME_SETTINGS_NAME);
+                    RicUtils_RuntimeSettings.s_Instance = Resources.Load<RicUtils_RuntimeSettings>(PathConstants.RUNTIME_SETTINGS_FILE_PATH);
 #if UNITY_EDITOR
                     if (!s_Instance)
                     {
@@ -45,7 +45,7 @@ namespace RicUtils.Settings
         {
             if (s_Instance == null)
             {
-                RicUtils_RuntimeSettings settings = Resources.Load<RicUtils_RuntimeSettings>(PathConstants.RUNTIME_SETTINGS_NAME);
+                RicUtils_RuntimeSettings settings = Resources.Load<RicUtils_RuntimeSettings>(PathConstants.RUNTIME_SETTINGS_FILE_PATH);
                 if (settings != null)
                     s_Instance = settings;
             }
