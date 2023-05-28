@@ -106,30 +106,6 @@ namespace RicUtils.Editor.Utilities
             return found;
         }
 
-        public static void CreateNewScript(string defaultNewFileName, string templatePath)
-        {
-            CreateNewScript<DoCreateScriptAsset>(defaultNewFileName, templatePath);
-        }
-
-        public static void CreateNewScript<T>(string defaultNewFileName, string templatePath) where T : EndNameEditAction
-        {
-            var endAction = ScriptableObject.CreateInstance<T>();
-            CreateNewScript(endAction, defaultNewFileName, templatePath);
-        }
-
-        public static void CreateNewScript<T>(T endAction, string defaultNewFileName, string templatePath) where T : EndNameEditAction
-        {
-            ProjectWindowUtil.StartNameEditingIfProjectWindowExists(icon: Path.GetExtension(defaultNewFileName) switch
-            {
-                ".cs" => EditorGUIUtility.IconContent("cs Script Icon").image as Texture2D,
-                ".shader" => EditorGUIUtility.IconContent("Shader Icon").image as Texture2D,
-                ".asmdef" => EditorGUIUtility.IconContent("AssemblyDefinitionAsset Icon").image as Texture2D,
-                ".asmref" => EditorGUIUtility.IconContent("AssemblyDefinitionReferenceAsset Icon").image as Texture2D,
-                _ => EditorGUIUtility.IconContent("TextAsset Icon").image as Texture2D,
-            }, instanceID: 0, endAction: endAction, pathName: defaultNewFileName, resourceFile: templatePath);
-            AssetDatabase.Refresh();
-        }
-
         public static void AddStylesheet(this VisualElement root, params string[] styleSheets)
         {
             foreach (var sheet in styleSheets)

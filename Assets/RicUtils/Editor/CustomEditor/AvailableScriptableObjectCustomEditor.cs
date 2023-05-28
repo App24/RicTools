@@ -6,7 +6,7 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
-namespace RicUtils.Editor.CustomEditor
+namespace RicUtils.Editor.CustomEditors
 {
     [UnityEditor.CustomEditor(typeof(AvailableScriptableObject<>), true)]
     [CanEditMultipleObjects]

@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Scripting;
 using UnityEngine.UIElements;
 
-namespace RicUtils.Editor
+namespace RicUtils.Editor.UIElements
 {
     // web* src: https://gist.github.com/andrew-raphael-lukasik/69c7858e39e22f197ca51b318b218cc7
     [Preserve]

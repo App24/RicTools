@@ -16,17 +16,17 @@ public class #SCRIPTNAME# : GenericEditorWindow<#SCRIPTABLEOBJECT#, #AVAILABLESC
 
     protected override void DrawGUI()
     {
-
+        #NOTRIM#
     }
 
     protected override void LoadScriptableObject(#SCRIPTABLEOBJECT# so, bool isNull)
     {
-
+        #NOTRIM#
     }
 
     protected override void CreateAsset(ref #SCRIPTABLEOBJECT# asset)
     {
-
+        #NOTRIM#
     }
 }
 #ROOTNAMESPACEEND#

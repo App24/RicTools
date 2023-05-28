@@ -7,6 +7,6 @@ using RicUtils.ScriptableObjects;
     #ROOTNAMESPACEBEGIN#
 public class #SCRIPTNAME# : AvailableScriptableObject<#SCRIPTABLEOBJECT#>
 {
-	
+	#NOTRIM#
 }
 #ROOTNAMESPACEEND#

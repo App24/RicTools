@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine.UIElements;
 
-namespace RicUtils.Editor.Elements
+namespace RicUtils.Editor.UIElements
 {
     public class TabBar
     {

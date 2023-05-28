@@ -1,4 +1,4 @@
-using RicUtils.Editor.Elements;
+using RicUtils.Editor.UIElements;
 using System.Collections;
 using System.Linq;
 using System.Reflection;
@@ -406,6 +406,11 @@ namespace RicUtils.Editor.Utilities
             var tabBar = new TabBar(root);
 
             return tabBar;
+        }
+
+        public static void AddCommonStylesheet(this VisualElement root)
+        {
+            root.AddStylesheet("RicUtils/Common.uss");
         }
     }
 }

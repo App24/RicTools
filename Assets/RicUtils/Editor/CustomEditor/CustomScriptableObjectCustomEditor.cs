@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace RicUtils.Editor.CustomEditor
+namespace RicUtils.Editor.CustomEditors
 {
     [UnityEditor.CustomEditor(typeof(GenericScriptableObject), true)]
     [CanEditMultipleObjects]

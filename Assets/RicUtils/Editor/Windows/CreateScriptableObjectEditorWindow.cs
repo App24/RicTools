@@ -10,6 +10,7 @@ using UnityEditor.Callbacks;
 using UnityEditor.Compilation;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static UnityEngine.GraphicsBuffer;
 
 namespace RicUtils.Editor.Windows
 {
@@ -18,6 +19,7 @@ namespace RicUtils.Editor.Windows
         private EditorContainer<string> scriptableObjectName = new EditorContainer<string>();
         private EditorContainer<string> availableScriptableObjectName = new EditorContainer<string>();
         private EditorContainer<string> editorWindowName = new EditorContainer<string>();
+        private EditorContainer<bool> openInEditor = new EditorContainer<bool>();
 
         private TextField soNameTextField;
         private TextField availableSoTextField;
@@ -37,13 +39,10 @@ namespace RicUtils.Editor.Windows
 
         private void CreateGUI()
         {
-            {
-                rootVisualElement.AddLabel("Assets To Create");
-            }
+            rootVisualElement.AddCommonStylesheet();
 
-            {
-                rootVisualElement.AddSeparator(new Color32(37, 37, 37, 255));
-            }
+            rootVisualElement.AddLabel("Assets To Create");
+            rootVisualElement.AddSeparator(new Color32(37, 37, 37, 255));
 
             soNameTextField = rootVisualElement.AddTextField(scriptableObjectName, "Scriptable Object", (old) =>
             {
@@ -84,6 +83,8 @@ namespace RicUtils.Editor.Windows
                 ToggleWarning(false);
             }
 
+            rootVisualElement.AddToggle(openInEditor, "Open in editor when files are created");
+
             rootVisualElement.AddButton("Create", CreateAssets);
 
             soNameTextField.Focus();
@@ -120,17 +121,17 @@ namespace RicUtils.Editor.Windows
 
             if (!string.IsNullOrEmpty(rootNamespace)) { rootNamespace += "."; }
 
+            Object genericSoFile;
+            Object availableSoFile;
+            Object editorWindowFile;
+
             {
 
                 string defaultNewFileName = Path.Combine(path, soName + ".cs");
 
                 string templatePath = PathConstants.TEMPLATES_PATH + "/Script-NewGenericScriptableObject.cs.txt";
 
-                var endAction = ScriptableObject.CreateInstance<DoCreateScriptAsset>();
-
-                endAction.Action(0, defaultNewFileName, templatePath);
-
-                //ToolUtilities.CreateNewScript(defaultNewFileName, templatePath);
+                genericSoFile = FileUtilities.CreateScriptAssetFromTemplate(defaultNewFileName, templatePath);
             }
 
             {
@@ -138,13 +139,11 @@ namespace RicUtils.Editor.Windows
 
                 string templatePath = PathConstants.TEMPLATES_PATH + "/Script-NewAvailableScriptableObject.cs.txt";
 
-                var endAction = ScriptableObject.CreateInstance<DoCreateAvailableAsset>();
-
-                endAction.scriptableObject = soName;
-
-                endAction.Action(0, defaultNewFileName, templatePath);
-
-                //ToolUtilities.CreateNewScript(endAction, defaultNewFileName, templatePath);
+                availableSoFile = FileUtilities.CreateScriptAssetFromTemplate(defaultNewFileName, templatePath, (content) =>
+                {
+                    content = content.Replace("#SCRIPTABLEOBJECT#", soName);
+                    return content;
+                });
             }
 
             {
@@ -152,25 +151,36 @@ namespace RicUtils.Editor.Windows
 
                 string templatePath = PathConstants.TEMPLATES_PATH + "/Script-NewGenericEditorWindow.cs.txt";
 
-                var endAction = ScriptableObject.CreateInstance<DoCreateEditorAsset>();
-
-                endAction.scriptableObject = soName;
-                endAction.availableScriptableObject = availableSo;
-
-                endAction.Action(0, defaultNewFileName, templatePath);
-
-                //ToolUtilities.CreateNewScript(endAction, defaultNewFileName, templatePath);
+                editorWindowFile = FileUtilities.CreateScriptAssetFromTemplate(defaultNewFileName, templatePath, (content) =>
+                {
+                    content = content.Replace("#SCRIPTABLEOBJECT#", soName);
+                    content = content.Replace("#AVAILABLESCRIPTABLEOBJECT#", availableSo);
+                    return content;
+                });
             }
 
             EditorPrefs.SetString("CustomSo", $"{rootNamespace}{soName},{dll}");
             EditorPrefs.SetString("AvailableSo", $"{rootNamespace}{availableSo},{dll}");
             EditorPrefs.SetString("EditorWindow", $"{rootNamespace}{editorWindow},{dll}");
+
+            if (openInEditor.Value)
+            {
+                AssetDatabase.OpenAsset(genericSoFile);
+                AssetDatabase.OpenAsset(availableSoFile);
+                AssetDatabase.OpenAsset(editorWindowFile);
+            }
         }
 
         private void ToggleWarning(bool visible)
         {
-            emptyFieldWarningContainer.visible = visible;
-            emptyFieldWarningContainer.style.height = visible ? new StyleLength(StyleKeyword.Null) : 0;
+            if (visible)
+            {
+                emptyFieldWarningContainer.RemoveFromClassList("hidden");
+            }
+            else
+            {
+                emptyFieldWarningContainer.AddToClassList("hidden");
+            }
         }
 
         [DidReloadScripts]

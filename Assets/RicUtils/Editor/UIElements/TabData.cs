@@ -1,6 +1,6 @@
 ﻿using UnityEngine.UIElements;
 
-namespace RicUtils.Editor.Elements
+namespace RicUtils.Editor.UIElements
 {
     public struct TabData
     {

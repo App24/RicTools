@@ -38,6 +38,8 @@ namespace RicUtils.Editor.Windows
 
         private void CreateGUI()
         {
+            rootVisualElement.AddCommonStylesheet();
+
             onLoad = null;
             soObjectField = rootVisualElement.AddObjectField(scriptableObject, "Scriptable Object", () =>
             {
