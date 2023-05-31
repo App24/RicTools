@@ -1,10 +1,6 @@
 using RicUtils.Managers;
 using RicUtils.ScriptableObjects;
-using System.Collections;
-using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
 using TypeReferences;
-using UnityEngine;
 
 namespace RicUtils.Settings
 {

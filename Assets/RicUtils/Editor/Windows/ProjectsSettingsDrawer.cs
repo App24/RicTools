@@ -1,11 +1,8 @@
-using Codice.CM.Common;
 using RicUtils.Editor.Settings;
-using RicUtils.Editor.Utilities;
 using RicUtils.Managers;
 using RicUtils.ScriptableObjects;
 using RicUtils.Settings;
 using RicUtils.Utilities;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEditorInternal;

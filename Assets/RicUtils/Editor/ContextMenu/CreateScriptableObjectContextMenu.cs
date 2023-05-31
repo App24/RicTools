@@ -1,6 +1,4 @@
 using RicUtils.Editor.Windows;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 

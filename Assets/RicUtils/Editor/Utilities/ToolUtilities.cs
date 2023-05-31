@@ -2,12 +2,9 @@ using RicUtils.Editor.Settings;
 using RicUtils.ScriptableObjects;
 using RicUtils.Utilities;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
 using System.Reflection;
 using UnityEditor;
 using UnityEditor.Callbacks;
-using UnityEditor.ProjectWindowCallback;
 using UnityEngine;
 using UnityEngine.UIElements;
 

@@ -1,10 +1,8 @@
 using RicUtils.Editor.Utilities;
 using RicUtils.ScriptableObjects;
 using RicUtils.Utilities;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
-using UnityEditor.Callbacks;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -228,7 +226,7 @@ namespace RicUtils.Editor.Windows
             saveButton.tooltip = tooltip;
         }
 
-        protected void RegisterCheckCompletion<TValueType>(INotifyValueChanged<TValueType> control)
+        public void RegisterCheckCompletion<TValueType>(INotifyValueChanged<TValueType> control)
         {
             control.RegisterValueChangedCallback(callback =>
             {
@@ -236,7 +234,7 @@ namespace RicUtils.Editor.Windows
             });
         }
 
-        protected void RegisterLoadChange<TValueType>(BaseField<TValueType> element, EditorContainer<TValueType> editorContainer)
+        public void RegisterLoadChange<TValueType>(BaseField<TValueType> element, EditorContainer<TValueType> editorContainer)
         {
             onLoad += () =>
             {
@@ -244,7 +242,7 @@ namespace RicUtils.Editor.Windows
             };
         }
 
-        protected void RegisterLoadChange<TValueType>(BaseField<System.Enum> element, EditorContainer<TValueType> editorContainer) where TValueType : System.Enum
+        public void RegisterLoadChange<TValueType>(BaseField<System.Enum> element, EditorContainer<TValueType> editorContainer) where TValueType : System.Enum
         {
             onLoad += () =>
             {
@@ -252,7 +250,7 @@ namespace RicUtils.Editor.Windows
             };
         }
 
-        protected void RegisterLoadChange<TValueType>(ObjectField element, EditorContainer<TValueType> editorContainer) where TValueType : Object
+        public void RegisterLoadChange<TValueType>(ObjectField element, EditorContainer<TValueType> editorContainer) where TValueType : Object
         {
             onLoad += () =>
             {

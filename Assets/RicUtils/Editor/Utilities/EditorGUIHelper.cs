@@ -1,7 +1,4 @@
 using RicUtils.Editor.UIElements;
-using System.Collections;
-using System.Linq;
-using System.Reflection;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -411,6 +408,26 @@ namespace RicUtils.Editor.Utilities
         public static void AddCommonStylesheet(this VisualElement root)
         {
             root.AddStylesheet("RicUtils/Common.uss");
+        }
+
+        public static void ToggleClass(this VisualElement root, string className, bool value)
+        {
+            if (value)
+            {
+                root.AddToClassList(className);
+            }
+            else
+            {
+                root.RemoveFromClassList(className);
+            }
+        }
+
+        public static void DrawBox(Rect rect, Color color)
+        {
+            var backgroundColor = GUI.backgroundColor;
+            GUI.backgroundColor = color;
+            GUI.Box(rect, "");
+            GUI.backgroundColor = backgroundColor;
         }
     }
 }

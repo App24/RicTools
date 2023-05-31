@@ -1,8 +1,6 @@
 ﻿using RicUtils.Editor.Windows;
 using RicUtils.ScriptableObjects;
 using TypeReferences;
-using UnityEditor;
-using UnityEngine;
 
 namespace RicUtils.Editor.Settings
 {

@@ -1,7 +1,5 @@
 using RicUtils.Editor.Utilities;
 using RicUtils.ScriptableObjects;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 

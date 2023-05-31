@@ -1,8 +1,5 @@
-using RicUtils.Editor.ContextMenu;
 using RicUtils.Editor.Settings;
 using RicUtils.Editor.Utilities;
-using RicUtils.ScriptableObjects;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
@@ -10,7 +7,6 @@ using UnityEditor.Callbacks;
 using UnityEditor.Compilation;
 using UnityEngine;
 using UnityEngine.UIElements;
-using static UnityEngine.GraphicsBuffer;
 
 namespace RicUtils.Editor.Windows
 {
@@ -173,14 +169,7 @@ namespace RicUtils.Editor.Windows
 
         private void ToggleWarning(bool visible)
         {
-            if (visible)
-            {
-                emptyFieldWarningContainer.RemoveFromClassList("hidden");
-            }
-            else
-            {
-                emptyFieldWarningContainer.AddToClassList("hidden");
-            }
+            emptyFieldWarningContainer.ToggleClass("hidden", !visible);
         }
 
         [DidReloadScripts]

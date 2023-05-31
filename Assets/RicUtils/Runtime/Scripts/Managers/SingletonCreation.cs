@@ -1,7 +1,5 @@
 using RicUtils.Settings;
 using RicUtils.Utilities;
-using System.Collections;
-using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 

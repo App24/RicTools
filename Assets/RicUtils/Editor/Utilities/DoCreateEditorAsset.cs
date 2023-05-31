@@ -1,6 +1,4 @@
-﻿using RicUtils.Editor.Utilities;
-
-namespace RicUtils.Editor.ContextMenu
+﻿namespace RicUtils.Editor.Utilities
 {
     internal class DoCreateEditorAsset : DoCreateScriptAsset
     {
