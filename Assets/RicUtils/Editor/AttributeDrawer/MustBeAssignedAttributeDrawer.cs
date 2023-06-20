@@ -50,7 +50,7 @@ namespace RicUtils.Editor.AttributeDrawer
 
                 foreach (var field in fields)
                 {
-                    if (!field.IsDefined(typeof(MustBeAssignedAttribute), false) && !field.IsDefined(typeof(SerializeField), false)) continue;
+                    if (!field.IsDefined(typeof(MustBeAssignedAttribute), false) || !field.IsDefined(typeof(SerializeField), false)) continue;
 
                     var error = GetError(field, behaviour);
 

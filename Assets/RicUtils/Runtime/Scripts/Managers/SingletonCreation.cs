@@ -1,3 +1,4 @@
+using RicUtils.ScriptableObjects;
 using RicUtils.Settings;
 using RicUtils.Utilities;
 using System.Reflection;
@@ -10,6 +11,7 @@ namespace RicUtils.Managers
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void OnLoad()
         {
+            CreateManager(typeof(TimerManager));
             foreach (var singletonManager in RicUtils_RuntimeSettings.singletonManagers)
             {
                 var type = singletonManager.manager.Type;
@@ -18,14 +20,19 @@ namespace RicUtils.Managers
                     Debug.LogWarning($"Could not find type: {singletonManager.manager.TypeNameAndAssembly}");
                     continue;
                 }
-                var method = type.GetMethod("CreateManager", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod | BindingFlags.FlattenHierarchy);
-                var manager = method.Invoke(null, new object[] { });
-                if (RicUtilities.IsSubclassOfRawGeneric(typeof(DataGenericManager<,>), type))
-                {
-                    type.GetField("data", BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy).SetValue(manager, singletonManager.data);
-                }
-                type.GetMethod("OnCreation", BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.InvokeMethod | BindingFlags.FlattenHierarchy).Invoke(manager, new object[] { });
+                CreateManager(type, singletonManager.data);
             }
+        }
+
+        private static void CreateManager(System.Type type, DataManagerScriptableObject data=null)
+        {
+            var method = type.GetMethod("CreateManager", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod | BindingFlags.FlattenHierarchy);
+            var manager = method.Invoke(null, new object[] { });
+            if (RicUtilities.IsSubclassOfRawGeneric(typeof(DataGenericManager<,>), type))
+            {
+                type.GetField("data", BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy).SetValue(manager, data);
+            }
+            type.GetMethod("OnCreation", BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.InvokeMethod | BindingFlags.FlattenHierarchy).Invoke(manager, new object[] { });
         }
     }
 }

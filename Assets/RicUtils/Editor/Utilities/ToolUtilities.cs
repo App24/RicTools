@@ -118,5 +118,16 @@ namespace RicUtils.Editor.Utilities
                 root.styleSheets.Add(stylesheet);
             }
         }
+
+        public static Texture2D RenderStaticPreview(Sprite sprite, int width, int height)
+        {
+            if (sprite == null) return null;
+            var spriteUtilityType = System.Type.GetType("UnityEditor.SpriteUtility,UnityEditor.CoreModule");
+            if (spriteUtilityType == null) return null;
+            var ret = spriteUtilityType
+                        .GetMethod("RenderStaticPreview", new System.Type[] { typeof(Sprite), typeof(Color), typeof(int), typeof(int) })
+                        .Invoke(null, new object[] { sprite, Color.white, width, height });
+            return ret as Texture2D;
+        }
     }
 }

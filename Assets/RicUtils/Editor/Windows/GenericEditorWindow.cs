@@ -29,6 +29,10 @@ namespace RicUtils.Editor.Windows
 
         private System.Action onLoad;
 
+        public new VisualElement rootVisualElement => _container;
+
+        private VisualElement _container;
+
         protected virtual void OnEnable()
         {
             serializedObject = new SerializedObject(this);
@@ -36,8 +40,14 @@ namespace RicUtils.Editor.Windows
 
         private void CreateGUI()
         {
-            rootVisualElement.AddCommonStylesheet();
+            base.rootVisualElement.AddCommonStylesheet();
 
+            _container = new ScrollView()
+            {
+                showHorizontal = false, showVertical = true,
+            };
+            base.rootVisualElement.Add(_container);
+			
             onLoad = null;
             soObjectField = rootVisualElement.AddObjectField(scriptableObject, "Scriptable Object", () =>
             {
@@ -228,10 +238,22 @@ namespace RicUtils.Editor.Windows
 
         public void RegisterCheckCompletion<TValueType>(INotifyValueChanged<TValueType> control)
         {
-            control.RegisterValueChangedCallback(callback =>
-            {
-                CheckCompletion();
-            });
+            control.RegisterValueChangedCallback(CheckCompletionCallback);
+        }
+
+        public void UnregisterCheckCompletion<TValueType>(INotifyValueChanged<TValueType> control)
+        {
+            control.UnregisterValueChangedCallback(CheckCompletionCallback);
+        }
+
+        private void CheckCompletionCallback<TValueType>(ChangeEvent<TValueType> callback)
+        {
+            CheckCompletion();
+        }
+
+        public void RegisterCheckCompletion(Button button)
+        {
+            button.clicked += CheckCompletion;
         }
 
         public void RegisterLoadChange<TValueType>(BaseField<TValueType> element, EditorContainer<TValueType> editorContainer)
@@ -256,6 +278,11 @@ namespace RicUtils.Editor.Windows
             {
                 element.value = editorContainer.Value;
             };
+        }
+
+        public void RegisterLoadChange(System.Action onLoad)
+        {
+            this.onLoad += onLoad;
         }
     }
 
