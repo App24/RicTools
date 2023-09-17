@@ -12,7 +12,7 @@ namespace RicUtils.Editor.Settings
 
         public static string version
         {
-            get { return "1.6.1"; }
+            get { return "1.6.2"; }
         }
 
         public static ScriptableEditor[] scriptableEditors

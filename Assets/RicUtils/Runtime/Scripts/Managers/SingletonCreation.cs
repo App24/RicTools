@@ -24,7 +24,7 @@ namespace RicUtils.Managers
             }
         }
 
-        private static void CreateManager(System.Type type, DataManagerScriptableObject data=null)
+        private static void CreateManager(System.Type type, DataManagerScriptableObject data = null)
         {
             var method = type.GetMethod("CreateManager", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod | BindingFlags.FlattenHierarchy);
             var manager = method.Invoke(null, new object[] { });

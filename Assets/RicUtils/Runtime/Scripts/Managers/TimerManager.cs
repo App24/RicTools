@@ -24,7 +24,7 @@ namespace RicUtils
         {
             timers.RemoveAll(g => g == null);
 
-            foreach(var timer in timers)
+            foreach (var timer in timers)
             {
                 timer.Update();
             }

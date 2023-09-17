@@ -1,10 +1,10 @@
 using RicUtils.ScriptableObjects;
-using System.IO;
-using System.Text.RegularExpressions;
-using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
+using UnityEditor;
 using UnityEngine;
 
 namespace RicUtils.Utilities
@@ -88,14 +88,14 @@ namespace RicUtils.Utilities
             }
         }
 #endif
-		public static T GetRandomElement<T>(this IEnumerable<T> array)
-		{
-			return array.ElementAt(Random.Range(0, array.Count()));
-		}
+        public static T GetRandomElement<T>(this IEnumerable<T> array)
+        {
+            return array.ElementAt(Random.Range(0, array.Count()));
+        }
 
-		public static T GetRandomElement<T>(this System.Array array)
-		{
-			return (T)array.GetValue(Random.Range(0, array.Length));
-		}
+        public static T GetRandomElement<T>(this System.Array array)
+        {
+            return (T)array.GetValue(Random.Range(0, array.Length));
+        }
     }
 }

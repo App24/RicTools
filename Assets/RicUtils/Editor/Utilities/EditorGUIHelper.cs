@@ -144,6 +144,25 @@ namespace RicUtils.Editor.Utilities
             return intField;
         }
 
+        public static LongField AddLongField(this VisualElement root, EditorContainer<long> data, string text = "Long", System.Action onSelectionChange = null)
+        {
+            var longField = new LongField()
+            {
+                label = text,
+                value = data.Value,
+            };
+
+            longField.RegisterValueChangedCallback(callback =>
+            {
+                data.Value = callback.newValue;
+                onSelectionChange?.Invoke();
+            });
+
+            root.Add(longField);
+
+            return longField;
+        }
+
         public static Toggle AddToggle(this VisualElement root, EditorContainer<bool> data, string text = "Boolean", System.Action onSelectionChange = null)
         {
             var toggle = new Toggle()

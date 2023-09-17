@@ -44,10 +44,11 @@ namespace RicUtils.Editor.Windows
 
             _container = new ScrollView()
             {
-                showHorizontal = false, showVertical = true,
+                horizontalScrollerVisibility = ScrollerVisibility.Hidden,
+                verticalScrollerVisibility = ScrollerVisibility.Auto,
             };
             base.rootVisualElement.Add(_container);
-			
+
             onLoad = null;
             soObjectField = rootVisualElement.AddObjectField(scriptableObject, "Scriptable Object", () =>
             {

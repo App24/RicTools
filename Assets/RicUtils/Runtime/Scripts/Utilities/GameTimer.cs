@@ -28,13 +28,13 @@ namespace RicUtils.Utilities
 
         internal void Update()
         {
-            if(ended || !started) return;
+            if (ended || !started) return;
 
             time += Time.deltaTime;
-            if(time >= Timer)
+            if (time >= Timer)
             {
                 onTick?.Invoke();
-                if(!Repeat) ended = true;
+                if (!Repeat) ended = true;
                 time -= Timer;
             }
         }
