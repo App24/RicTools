@@ -1,0 +1,32 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using RicTools;
+using RicTools.Editor.Windows;
+using UnityEditor;
+
+    #ROOTNAMESPACEBEGIN#
+public class #SCRIPTNAME# : GenericEditorWindow<#SCRIPTABLEOBJECT#, #AVAILABLESCRIPTABLEOBJECT#>
+{
+    [MenuItem("Window/RicTools Windows/#SCRIPTNAME#")]
+	public static #SCRIPTNAME# ShowWindow()
+    {
+        return GetWindow<#SCRIPTNAME#>("#SCRIPTNAME#");
+    }
+
+    protected override void DrawGUI()
+    {
+        #NOTRIM#
+    }
+
+    protected override void LoadScriptableObject(#SCRIPTABLEOBJECT# so, bool isNull)
+    {
+        #NOTRIM#
+    }
+
+    protected override void CreateAsset(ref #SCRIPTABLEOBJECT# asset)
+    {
+        #NOTRIM#
+    }
+}
+#ROOTNAMESPACEEND#
