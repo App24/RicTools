@@ -12,9 +12,16 @@ namespace RicTools.Editor.Windows
 {
     public class CreateScriptableObjectEditorWindow : EditorWindow
     {
+        [SerializeField]
         private EditorContainer<string> scriptableObjectName = new EditorContainer<string>();
+
+        [SerializeField]
         private EditorContainer<string> availableScriptableObjectName = new EditorContainer<string>();
+
+        [SerializeField]
         private EditorContainer<string> editorWindowName = new EditorContainer<string>();
+
+        [SerializeField]
         private EditorContainer<bool> openInEditor = new EditorContainer<bool>();
 
         private TextField soNameTextField;
@@ -170,50 +177,6 @@ namespace RicTools.Editor.Windows
         private void ToggleWarning(bool visible)
         {
             emptyFieldWarningContainer.ToggleClass("hidden", !visible);
-        }
-
-        [DidReloadScripts]
-        private static void UpdateSettingsWhenReady()
-        {
-            if (EditorApplication.isCompiling || EditorApplication.isUpdating)
-            {
-                EditorApplication.delayCall += UpdateSettingsWhenReady;
-                return;
-            }
-
-            EditorApplication.delayCall += UpdateSettingsNow;
-        }
-
-        private static void UpdateSettingsNow()
-        {
-            if (EditorPrefs.GetBool("ReadyToUpdateSettings"))
-            {
-
-                var so = EditorPrefs.GetString("CustomSo");
-                var available = EditorPrefs.GetString("AvailableSo");
-                var window = EditorPrefs.GetString("EditorWindow");
-
-                var soType = System.Type.GetType(so);
-                var availableType = System.Type.GetType(available);
-                var windowType = System.Type.GetType(window);
-
-                EditorPrefs.SetBool("ReadyToUpdateSettings", false);
-
-                var list = new List<ScriptableEditor>(RicTools_EditorSettings.instance.m_scriptableEditors);
-
-                list.Add(new ScriptableEditor()
-                {
-                    customScriptableObjectType = new TypeReferences.TypeReference(soType),
-                    availableScriptableObjectType = new TypeReferences.TypeReference(availableType),
-                    editorType = new TypeReferences.TypeReference(windowType),
-                });
-
-                RicTools_EditorSettings.instance.m_scriptableEditors = list.ToArray();
-
-                EditorUtility.SetDirty(RicTools_EditorSettings.instance);
-
-                AssetDatabase.SaveAssets();
-            }
         }
     }
 }

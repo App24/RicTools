@@ -11,12 +11,14 @@ namespace RicTools.Editor.Windows
 {
     public abstract class GenericEditorWindow<GenericSoType, AvailableSoType> : EditorWindow where GenericSoType : GenericScriptableObject where AvailableSoType : AvailableScriptableObject<GenericSoType>
     {
+        [SerializeField]
         protected EditorContainer<GenericSoType> scriptableObject = new EditorContainer<GenericSoType>();
 
         protected string AvailableSOPath => RicUtilities.GetAvailableScriptableObjectPath(typeof(AvailableSoType));
 
         protected string SavePath => RicUtilities.GetScriptableObjectPath(typeof(GenericSoType));
 
+        [SerializeField]
         protected EditorContainer<string> spawnableId = new EditorContainer<string>();
 
         protected SerializedObject serializedObject;

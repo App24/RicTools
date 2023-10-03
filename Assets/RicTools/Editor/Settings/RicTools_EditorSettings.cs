@@ -12,14 +12,8 @@ namespace RicTools.Editor.Settings
 
         public static string version
         {
-            get { return "1.6.3"; }
+            get { return "1.7.0"; }
         }
-
-        public static ScriptableEditor[] scriptableEditors
-        {
-            get { return instance.m_scriptableEditors; }
-        }
-        public ScriptableEditor[] m_scriptableEditors = new ScriptableEditor[] { };
 
         public static RicTools_EditorSettings instance
         {

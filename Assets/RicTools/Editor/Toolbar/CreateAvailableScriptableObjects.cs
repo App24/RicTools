@@ -12,19 +12,21 @@ namespace RicTools.Editor.Toolbar
         [MenuItem("RicTools/Create Available Scriptable Objects", priority = 1)]
         public static void CreateAvailableScripts()
         {
-            foreach (var keyValuePair in ToolUtilities.GetScriptableEditors())
+            foreach (var keyValuePair in ToolUtilities.GetSOsTypes())
             {
-                if (!keyValuePair.IsValid()) continue;
-                if (keyValuePair.AvailableScriptableObjectType == null) continue;
-                var path = RicUtilities.GetAvailableScriptableObjectPath(keyValuePair.AvailableScriptableObjectType);
+                var availableScriptableObjectType = ToolUtilities.GetAvailableScriptableObjectType(keyValuePair);
+
+                if (availableScriptableObjectType == null) continue;
+
+                var path = RicUtilities.GetAvailableScriptableObjectPath(availableScriptableObjectType);
                 RicUtilities.CreateAssetFolder(path);
 
-                var available = AssetDatabase.LoadAssetAtPath(path, keyValuePair.AvailableScriptableObjectType);
+                var available = AssetDatabase.LoadAssetAtPath(path, availableScriptableObjectType);
                 if (available == null)
                 {
-                    available = ScriptableObject.CreateInstance(keyValuePair.AvailableScriptableObjectType);
-                    var items = (IList)System.Activator.CreateInstance(typeof(List<>).MakeGenericType(keyValuePair.CustomScriptableObjectType));
-                    keyValuePair.AvailableScriptableObjectType.GetMethodRecursive("SetItems", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).Invoke(available, new object[] { items });
+                    available = ScriptableObject.CreateInstance(availableScriptableObjectType);
+                    var items = (IList)System.Activator.CreateInstance(typeof(List<>).MakeGenericType(keyValuePair));
+                    availableScriptableObjectType.GetMethodRecursive("SetItems", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).Invoke(available, new object[] { items });
 
                     AssetDatabase.CreateAsset(available, path);
 

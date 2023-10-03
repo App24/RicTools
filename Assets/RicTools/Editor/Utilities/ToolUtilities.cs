@@ -1,7 +1,9 @@
 using RicTools.Editor.Settings;
+using RicTools.Editor.Windows;
 using RicTools.ScriptableObjects;
 using RicTools.Utilities;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEditor.Callbacks;
@@ -12,11 +14,6 @@ namespace RicTools.Editor.Utilities
 {
     public static class ToolUtilities
     {
-        internal static List<ScriptableEditor> GetScriptableEditors()
-        {
-            return new List<ScriptableEditor>(Settings.RicTools_EditorSettings.scriptableEditors);
-        }
-
         public static List<T> FindAssetsByType<T>() where T : Object
         {
             List<T> assets = new List<T>();
@@ -35,25 +32,53 @@ namespace RicTools.Editor.Utilities
 
         internal static bool HasCustomEditor(System.Type type)
         {
-            return GetScriptableEditors().Exists(se => se.HasCustomEditor(type));
+            return GetCustomEditorType(type) != null;
         }
 
         internal static System.Type GetCustomEditorType(System.Type type)
         {
-            foreach (var keyValuePair in GetScriptableEditors())
+            var editorTypes = GetCustomEditorTypes();
+            foreach (var editorType in editorTypes)
             {
-                if (keyValuePair.HasCustomEditor(type)) return keyValuePair.EditorType;
+                var genericTypeArguments = editorType.GetTypeInfo().BaseType.GetTypeInfo().GenericTypeArguments;
+                if (genericTypeArguments.Length == 0) continue;
+                if (genericTypeArguments[0] == type) return editorType;
             }
+
             return null;
+        }
+
+        internal static bool HasAvailableScriptableObject(System.Type type)
+        {
+            return GetAvailableScriptableObjectType(type) != null;
         }
 
         internal static System.Type GetAvailableScriptableObjectType(System.Type type)
         {
-            foreach (var keyValuePair in GetScriptableEditors())
+            var editorTypes = GetAvailableScriptableObjectTypes();
+            foreach (var editorType in editorTypes)
             {
-                if (keyValuePair.HasAvailableScriptableObject(type)) return keyValuePair.AvailableScriptableObjectType;
+                var genericTypeArguments = editorType.GetTypeInfo().BaseType.GetTypeInfo().GenericTypeArguments;
+                if (genericTypeArguments.Length == 0) continue;
+                if (genericTypeArguments[0] == type) return editorType;
             }
+
             return null;
+        }
+
+        internal static List<System.Type> GetCustomEditorTypes()
+        {
+            return TypeCache.GetTypesDerivedFrom(typeof(GenericEditorWindow<,>)).ToList(); ;
+        }
+
+        internal static List<System.Type> GetAvailableScriptableObjectTypes()
+        {
+            return TypeCache.GetTypesDerivedFrom(typeof(AvailableScriptableObject<>)).ToList(); ;
+        }
+
+        internal static List<System.Type> GetSOsTypes()
+        {
+            return TypeCache.GetTypesDerivedFrom(typeof(GenericScriptableObject)).ToList(); ;
         }
 
         [OnOpenAsset]
@@ -69,23 +94,24 @@ namespace RicTools.Editor.Utilities
 
         private static bool OpenScriptableObjectFile(GenericScriptableObject so)
         {
-            foreach (var keyValuePair in GetScriptableEditors())
+            foreach (var keyValuePair in GetSOsTypes())
             {
-                if (keyValuePair.HasCustomEditor(so.GetType()))
+                if (HasCustomEditor(keyValuePair))
                 {
-                    var showWindow = keyValuePair.EditorType.GetMethod("ShowWindow", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+                    var editorType = GetCustomEditorType(keyValuePair);
+                    var showWindow = editorType.GetMethod("ShowWindow", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
                     if (showWindow == null)
                     {
-                        Debug.LogError(keyValuePair.EditorType + " has no ShowWindow static function");
+                        Debug.LogError(editorType + " has no ShowWindow static function");
                         return false;
                     }
                     var temp = showWindow.Invoke(null, null);
-                    var data = System.Convert.ChangeType(temp, keyValuePair.EditorType);
+                    var data = System.Convert.ChangeType(temp, editorType);
                     {
-                        var editorContainer = keyValuePair.EditorType.GetFieldRecursive("scriptableObject", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance).GetValue(data);
+                        var editorContainer = editorType.GetFieldRecursive("scriptableObject", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance).GetValue(data);
                         editorContainer.GetType().GetProperty("Value").SetValue(editorContainer, so);
                     }
-                    keyValuePair.EditorType.GetMethodRecursive("LoadScriptableObjectInternal", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(data, new object[] { so });
+                    editorType.GetMethodRecursive("LoadScriptableObjectInternal", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(data, new object[] { so });
                     return true;
                 }
             }

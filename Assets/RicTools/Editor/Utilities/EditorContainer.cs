@@ -1,5 +1,8 @@
-﻿namespace RicTools.Editor.Utilities
+﻿using System;
+
+namespace RicTools.Editor.Utilities
 {
+    [Serializable]
     public sealed class EditorContainer<TValueType>
     {
         public TValueType Value { get; set; } = default;

@@ -23,7 +23,6 @@ namespace RicTools.Editor.Windows
             public static readonly GUIContent scriptableEditorsAddButtonLabel = new GUIContent("Add Scriptable Editor");
         }
 
-        private static ReorderableList m_scriptableEditorsList;
         private static ReorderableList m_singletonManagersList;
 
         private static SerializedObject editorSerializedObject;
@@ -60,38 +59,7 @@ namespace RicTools.Editor.Windows
             editorSerializedObject = RicTools_EditorSettings.GetSerializedObject();
             serializedObject = RicTools_RuntimeSettings.GetSerializedObject();
 
-            m_scriptableEditorsList = new ReorderableList(editorSerializedObject, editorSerializedObject.FindProperty("m_scriptableEditors"), false, true, true, true);
-
             m_singletonManagersList = new ReorderableList(serializedObject, serializedObject.FindProperty("m_singletonManagers"), false, true, true, true);
-
-            m_scriptableEditorsList.elementHeight *= 3;
-
-            m_scriptableEditorsList.drawElementCallback = (rect, index, isActive, isFocused) =>
-            {
-                var element = m_scriptableEditorsList.serializedProperty.GetArrayElementAtIndex(index);
-                rect.y += 2;
-                float labelWidth = 200;
-                float width = rect.width - labelWidth;
-
-                EditorGUI.LabelField(new Rect(rect.x, rect.y, labelWidth, EditorGUIUtility.singleLineHeight), "Scriptable Object Type");
-                EditorGUI.PropertyField(new Rect(rect.x + labelWidth, rect.y, width, EditorGUIUtility.singleLineHeight), element.FindPropertyRelative("customScriptableObjectType"), GUIContent.none);
-
-                rect.y += EditorGUIUtility.singleLineHeight + 2;
-
-                EditorGUI.LabelField(new Rect(rect.x, rect.y, labelWidth, EditorGUIUtility.singleLineHeight), "Available Scriptable Object Type");
-                EditorGUI.PropertyField(new Rect(rect.x + labelWidth, rect.y, width, EditorGUIUtility.singleLineHeight), element.FindPropertyRelative("availableScriptableObjectType"), GUIContent.none);
-
-                rect.y += EditorGUIUtility.singleLineHeight + 2;
-
-                EditorGUI.LabelField(new Rect(rect.x, rect.y, labelWidth, EditorGUIUtility.singleLineHeight), "Editor Type");
-                EditorGUI.PropertyField(new Rect(rect.x + labelWidth, rect.y, width, EditorGUIUtility.singleLineHeight), element.FindPropertyRelative("editorType"), GUIContent.none);
-
-            };
-
-            m_scriptableEditorsList.drawHeaderCallback = rect =>
-            {
-                EditorGUI.LabelField(rect, Styles.scriptableEditorsListLabel);
-            };
 
             m_singletonManagersList.elementHeightCallback = index =>
             {
@@ -158,16 +126,6 @@ namespace RicTools.Editor.Windows
 
             float labelWidth = EditorGUIUtility.labelWidth;
             float fieldWidth = EditorGUIUtility.fieldWidth;
-            EditorGUI.indentLevel = 0;
-
-            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-            GUILayout.Label(Styles.scriptableEditorsLabel, EditorStyles.boldLabel);
-            m_scriptableEditorsList.DoLayoutList();
-
-            EditorGUI.indentLevel = 0;
-
-            EditorGUILayout.Space();
-            EditorGUILayout.EndVertical();
             EditorGUI.indentLevel = 0;
 
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
