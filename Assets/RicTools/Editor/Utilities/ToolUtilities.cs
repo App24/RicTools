@@ -42,7 +42,7 @@ namespace RicTools.Editor.Utilities
             {
                 var genericTypeArguments = editorType.GetTypeInfo().BaseType.GetTypeInfo().GenericTypeArguments;
                 if (genericTypeArguments.Length == 0) continue;
-                if (genericTypeArguments[0] == type) return editorType;
+                if (genericTypeArguments[0] == type || type.IsSubclassOf(genericTypeArguments[0])) return editorType;
             }
 
             return null;
@@ -60,7 +60,7 @@ namespace RicTools.Editor.Utilities
             {
                 var genericTypeArguments = editorType.GetTypeInfo().BaseType.GetTypeInfo().GenericTypeArguments;
                 if (genericTypeArguments.Length == 0) continue;
-                if (genericTypeArguments[0] == type) return editorType;
+                if (genericTypeArguments[0] == type || type.IsSubclassOf(genericTypeArguments[0])) return editorType;
             }
 
             return null;
@@ -94,26 +94,23 @@ namespace RicTools.Editor.Utilities
 
         private static bool OpenScriptableObjectFile(GenericScriptableObject so)
         {
-            foreach (var keyValuePair in GetSOsTypes())
+            if (HasCustomEditor(so.GetType()))
             {
-                if (HasCustomEditor(keyValuePair))
+                var editorType = GetCustomEditorType(so.GetType());
+                var showWindow = editorType.GetMethod("ShowWindow", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+                if (showWindow == null)
                 {
-                    var editorType = GetCustomEditorType(keyValuePair);
-                    var showWindow = editorType.GetMethod("ShowWindow", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
-                    if (showWindow == null)
-                    {
-                        Debug.LogError(editorType + " has no ShowWindow static function");
-                        return false;
-                    }
-                    var temp = showWindow.Invoke(null, null);
-                    var data = System.Convert.ChangeType(temp, editorType);
-                    {
-                        var editorContainer = editorType.GetFieldRecursive("scriptableObject", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance).GetValue(data);
-                        editorContainer.GetType().GetProperty("Value").SetValue(editorContainer, so);
-                    }
-                    editorType.GetMethodRecursive("LoadScriptableObjectInternal", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(data, new object[] { so });
-                    return true;
+                    Debug.LogError(editorType + " has no ShowWindow static function");
+                    return false;
                 }
+                var temp = showWindow.Invoke(null, null);
+                var data = System.Convert.ChangeType(temp, editorType);
+                {
+                    var editorContainer = editorType.GetFieldRecursive("scriptableObject", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance).GetValue(data);
+                    editorContainer.GetType().GetProperty("Value").SetValue(editorContainer, so);
+                }
+                editorType.GetMethodRecursive("LoadScriptableObjectInternal", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(data, new object[] { so });
+                return true;
             }
             return false;
         }
