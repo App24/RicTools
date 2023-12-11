@@ -11,7 +11,6 @@ namespace RicTools.Managers
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void OnLoad()
         {
-            CreateManager(typeof(TimerManager));
             foreach (var singletonManager in RicTools_RuntimeSettings.singletonManagers)
             {
                 var type = singletonManager.manager.Type;

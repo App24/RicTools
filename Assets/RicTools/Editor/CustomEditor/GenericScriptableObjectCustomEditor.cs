@@ -7,7 +7,7 @@ namespace RicTools.Editor.CustomEditors
 {
     [UnityEditor.CustomEditor(typeof(GenericScriptableObject), true)]
     [CanEditMultipleObjects]
-    public class CustomScriptableObjectCustomEditor : UnityEditor.Editor
+    public class GenericScriptableObjectCustomEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {

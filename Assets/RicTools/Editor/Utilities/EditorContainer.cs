@@ -6,6 +6,7 @@ namespace RicTools.Editor.Utilities
     public sealed class EditorContainer<TValueType>
     {
         public TValueType Value { get; set; } = default;
+        private readonly TValueType defaultValue;
 
         public static implicit operator TValueType(EditorContainer<TValueType> value) { return value.Value; }
         public static explicit operator EditorContainer<TValueType>(TValueType value) { return new EditorContainer<TValueType>() { Value = value }; }
@@ -17,6 +18,7 @@ namespace RicTools.Editor.Utilities
         public EditorContainer(TValueType value)
         {
             Value = value;
+            defaultValue = value;
         }
 
         public bool IsNull()
@@ -28,6 +30,11 @@ namespace RicTools.Editor.Utilities
         {
             if (IsNull()) return null;
             return Value.ToString();
+        }
+
+        public void Reset()
+        {
+            Value = defaultValue;
         }
     }
 }

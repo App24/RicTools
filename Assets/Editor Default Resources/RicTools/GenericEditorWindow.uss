@@ -1,0 +1,40 @@
+.root{
+	display: flex;
+	flex-direction: row;
+}
+
+.itemList{
+	width: 25%;
+	border-right-width: 2px;
+	border-color: var(--unity-colors-window-border);
+	/*background-color: red;*/
+}
+
+.editor{
+	width: 75%;
+	/*background-color: var(--unity-colors-window-border);*/
+}
+
+#EditorContainer{
+	padding-bottom:20px;
+}
+
+.searchBox{
+	position: absolute;
+	top: 1px;
+	right: 0px;
+	width: 200px;
+	height: 15px;
+}
+
+.itemButton{
+	background-color: var(--unity-colors-window-background);
+}
+
+.itemButton:hover{
+	background-color: var(--unity-colors-button-background-pressed);
+}
+
+.itemButton.pressed{
+	background-color: var(--unity-colors-window-border);
+}
