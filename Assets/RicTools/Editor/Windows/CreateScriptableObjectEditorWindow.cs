@@ -1,7 +1,9 @@
 using RicTools.Editor.Settings;
 using RicTools.Editor.Utilities;
+using RicTools.Utilities;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEditor.Compilation;
@@ -10,13 +12,10 @@ using UnityEngine.UIElements;
 
 namespace RicTools.Editor.Windows
 {
-    public class CreateScriptableObjectEditorWindow : EditorWindow
+    internal class CreateScriptableObjectEditorWindow : EditorWindow
     {
         [SerializeField]
         private EditorContainer<string> scriptableObjectName = new EditorContainer<string>();
-
-        [SerializeField]
-        private EditorContainer<string> availableScriptableObjectName = new EditorContainer<string>();
 
         [SerializeField]
         private EditorContainer<string> editorWindowName = new EditorContainer<string>();
@@ -25,10 +24,11 @@ namespace RicTools.Editor.Windows
         private EditorContainer<bool> openInEditor = new EditorContainer<bool>();
 
         private TextField soNameTextField;
-        private TextField availableSoTextField;
         private TextField editorNameTextField;
 
         private VisualElement emptyFieldWarningContainer;
+
+        public bool useCurrentProjectLocation;
 
         private void OnEnable()
         {
@@ -49,11 +49,6 @@ namespace RicTools.Editor.Windows
 
             soNameTextField = rootVisualElement.AddTextField(scriptableObjectName, "Scriptable Object", (old) =>
             {
-                if (availableScriptableObjectName.Value == null || availableScriptableObjectName.Value == old)
-                {
-                    availableScriptableObjectName.Value = scriptableObjectName;
-                }
-
                 if (editorWindowName.Value == null || editorWindowName.Value == old)
                 {
                     editorWindowName.Value = scriptableObjectName;
@@ -61,7 +56,6 @@ namespace RicTools.Editor.Windows
 
                 UpdateTextFields();
             });
-            availableSoTextField = rootVisualElement.AddTextField(availableScriptableObjectName, "Available So");
             editorNameTextField = rootVisualElement.AddTextField(editorWindowName, "Editor Window");
 
             {
@@ -72,7 +66,6 @@ namespace RicTools.Editor.Windows
                 };
 
                 soNameTextField.RegisterCallback(focusEvent);
-                availableSoTextField.RegisterCallback(focusEvent);
                 editorNameTextField.RegisterCallback(focusEvent);
             }
 
@@ -96,13 +89,12 @@ namespace RicTools.Editor.Windows
         private void UpdateTextFields()
         {
             soNameTextField.value = scriptableObjectName.Value;
-            availableSoTextField.value = availableScriptableObjectName.Value;
             editorNameTextField.value = editorWindowName.Value;
         }
 
         private void CreateAssets()
         {
-            if (string.IsNullOrWhiteSpace(scriptableObjectName.Value) || string.IsNullOrWhiteSpace(availableScriptableObjectName.Value) || string.IsNullOrWhiteSpace(editorWindowName.Value))
+            if (string.IsNullOrWhiteSpace(scriptableObjectName.Value) || string.IsNullOrWhiteSpace(editorWindowName.Value))
             {
                 ToggleWarning(true);
                 return;
@@ -111,11 +103,15 @@ namespace RicTools.Editor.Windows
             Close();
 
             EditorPrefs.SetBool("ReadyToUpdateSettings", true);
-
-            ToolUtilities.TryGetActiveFolderPath(out string path);
+            
+            var path = ToolUtilities.GetSelectedPathOrFallback();
+            if (useCurrentProjectLocation)
+            {
+                path = ToolUtilities.GetUniquePathNameAtSelectedPath("test.txt");
+                path = Path.GetDirectoryName(path);
+            }
 
             string soName = scriptableObjectName + "ScriptableObject";
-            string availableSo = "Available" + availableScriptableObjectName + "ScriptableObject";
             string editorWindow = editorWindowName + "EditorWindow";
 
             string rootNamespace = CompilationPipeline.GetAssemblyRootNamespaceFromScriptPath(path + "/temp.cs");
@@ -125,7 +121,6 @@ namespace RicTools.Editor.Windows
             if (!string.IsNullOrEmpty(rootNamespace)) { rootNamespace += "."; }
 
             Object genericSoFile;
-            Object availableSoFile;
             Object editorWindowFile;
 
             {
@@ -138,38 +133,25 @@ namespace RicTools.Editor.Windows
             }
 
             {
-                string defaultNewFileName = Path.Combine(path, availableSo + ".cs");
+                RicUtilities.CreateAssetFolder("Assets/Editor");
 
-                string templatePath = PathConstants.TEMPLATES_PATH + "/Script-NewAvailableScriptableObject.cs.txt";
-
-                availableSoFile = FileUtilities.CreateScriptAssetFromTemplate(defaultNewFileName, templatePath, (content) =>
-                {
-                    content = content.Replace("#SCRIPTABLEOBJECT#", soName);
-                    return content;
-                });
-            }
-
-            {
-                string defaultNewFileName = Path.Combine(path, editorWindow + ".cs");
+                string defaultNewFileName = Path.Combine("Assets/Editor", editorWindow + ".cs");
 
                 string templatePath = PathConstants.TEMPLATES_PATH + "/Script-NewGenericEditorWindow.cs.txt";
 
                 editorWindowFile = FileUtilities.CreateScriptAssetFromTemplate(defaultNewFileName, templatePath, (content) =>
                 {
                     content = content.Replace("#SCRIPTABLEOBJECT#", soName);
-                    content = content.Replace("#AVAILABLESCRIPTABLEOBJECT#", availableSo);
                     return content;
                 });
             }
 
             EditorPrefs.SetString("CustomSo", $"{rootNamespace}{soName},{dll}");
-            EditorPrefs.SetString("AvailableSo", $"{rootNamespace}{availableSo},{dll}");
             EditorPrefs.SetString("EditorWindow", $"{rootNamespace}{editorWindow},{dll}");
 
             if (openInEditor.Value)
             {
                 AssetDatabase.OpenAsset(genericSoFile);
-                AssetDatabase.OpenAsset(availableSoFile);
                 AssetDatabase.OpenAsset(editorWindowFile);
             }
         }

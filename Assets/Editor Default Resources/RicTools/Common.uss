@@ -1,4 +1,5 @@
 .hidden{
 	height: 0px;
+	position:absolute;
 	visibility: hidden;
 }

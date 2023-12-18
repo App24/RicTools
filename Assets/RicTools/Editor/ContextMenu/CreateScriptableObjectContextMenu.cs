@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace RicTools.Editor.ContextMenu
 {
-    public static class CreateScriptableObjectContextMenu
+    internal static class CreateScriptableObjectContextMenu
     {
         [MenuItem("Assets/Create/RicTools/Scriptable Object", priority = -10)]
         public static void Create()

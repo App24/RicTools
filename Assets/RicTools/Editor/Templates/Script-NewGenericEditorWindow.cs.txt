@@ -6,7 +6,7 @@ using RicTools.Editor.Windows;
 using UnityEditor;
 
     #ROOTNAMESPACEBEGIN#
-public class #SCRIPTNAME# : GenericEditorWindow<#SCRIPTABLEOBJECT#, #AVAILABLESCRIPTABLEOBJECT#>
+public class #SCRIPTNAME# : GenericEditorWindow<#SCRIPTABLEOBJECT#>
 {
     [MenuItem("Window/RicTools Windows/#SCRIPTNAME#")]
 	public static #SCRIPTNAME# ShowWindow()
@@ -14,17 +14,17 @@ public class #SCRIPTNAME# : GenericEditorWindow<#SCRIPTABLEOBJECT#, #AVAILABLESC
         return GetWindow<#SCRIPTNAME#>("#SCRIPTNAME#");
     }
 
-    protected override void DrawGUI()
+    protected override void CreateEditorGUI()
     {
         #NOTRIM#
     }
 
-    protected override void LoadScriptableObject(#SCRIPTABLEOBJECT# so, bool isNull)
+    protected override void LoadAsset(#SCRIPTABLEOBJECT# asset, bool isNull)
     {
         #NOTRIM#
     }
 
-    protected override void CreateAsset(ref #SCRIPTABLEOBJECT# asset)
+    protected override void SaveAsset(ref #SCRIPTABLEOBJECT# asset)
     {
         #NOTRIM#
     }

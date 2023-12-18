@@ -1,9 +1,12 @@
-﻿using RicTools.ScriptableObjects;
+﻿using RicTools.Editor.Windows;
+using RicTools.ScriptableObjects;
 using RicTools.Utilities;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor;
+using UnityEditor.Callbacks;
+using UnityEngine;
 
 namespace RicTools.Editor.Utilities
 {
@@ -13,34 +16,53 @@ namespace RicTools.Editor.Utilities
         {
             var temp = AssetDatabase.LoadMainAssetAtPath(AssetPath);
             if (temp == null) return AssetDeleteResult.DidNotDelete;
-            if (ToolUtilities.HasCustomEditor(temp.GetType()))
+            if(temp is GenericScriptableObject asset)
             {
-                var availableScriptableObjectType = ToolUtilities.GetAvailableScriptableObjectType(temp.GetType());
-                var availableScriptableObject = AssetDatabase.LoadMainAssetAtPath(RicUtilities.GetAvailableScriptableObjectPath(availableScriptableObjectType));
-                var baseType = temp.GetType();
-                while (baseType.BaseType != null && baseType.BaseType != typeof(GenericScriptableObject))
-                {
-                    baseType = baseType.BaseType;
-                }
-                if (availableScriptableObject != null)
-                {
-                    var itemsField = availableScriptableObjectType.GetField("items");
-                    var itemsArray = (object[])itemsField.GetValue(availableScriptableObject);
-                    var items = (IList)System.Activator.CreateInstance(typeof(List<>).MakeGenericType(baseType));
-                    foreach (var item in itemsArray)
-                    {
-                        items.Add(item);
-                    }
-                    items.Remove(temp);
-                    availableScriptableObjectType.GetMethodRecursive("SetItems", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(availableScriptableObject, new object[] { items });
+                var openedWindows = Resources.FindObjectsOfTypeAll<EditorWindow>();
 
-                    EditorUtility.SetDirty(availableScriptableObject);
-
-                    //AssetDatabase.SaveAssets();
+                foreach(var window in openedWindows)
+                {
+                    var type = window.GetType();
+                    if (!RicUtilities.IsSubclassOfRawGeneric(typeof(GenericEditorWindow<>), type)) continue;
+                    var genericTypeArguments = type.BaseType.GetTypeInfo().GenericTypeArguments;
+                    if (genericTypeArguments.Length < 1) continue;
+                    if (!RicUtilities.IsSubclassOfRawGeneric(genericTypeArguments[0], asset.GetType())) continue;
+                    var instanceField = type.GetFieldRecursive("instance", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public);
+                    if (instanceField == null) continue;
+                    var instanceValue = instanceField.GetValue(null);
+                    if (instanceValue == null) continue;
+                    asset.setForDeletion = true;
+                    EditorUtility.SetDirty(asset);
+                    type.GetMethodRecursive("ReloadAssetList", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance).Invoke(instanceValue, new object[] { });
+                    break;
                 }
             }
 
             return AssetDeleteResult.DidNotDelete;
+        }
+
+        [OnOpenAsset]
+        private static bool OnOpenAsset(int instanceId, int line)
+        {
+            var temp = EditorUtility.InstanceIDToObject(instanceId) as GenericScriptableObject;
+            if (temp == null) return false;
+            return OpenScriptableObject(temp);
+        }
+
+        private static bool OpenScriptableObject(GenericScriptableObject asset)
+        {
+            var editorType = ToolUtilities.GetCustomEditorType(asset.GetType());
+            if (editorType == null) return false;
+            var showWindow = editorType.GetMethod("ShowWindow", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+            if (showWindow == null)
+            {
+                Debug.LogError(editorType + " has no ShowWindow static function");
+                return false;
+            }
+            var temp = showWindow.Invoke(null, null);
+            var data = System.Convert.ChangeType(temp, editorType);
+            editorType.GetMethodRecursive("LoadGUID", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance).Invoke(data, new object[] { asset.guid });
+            return true;
         }
     }
 }

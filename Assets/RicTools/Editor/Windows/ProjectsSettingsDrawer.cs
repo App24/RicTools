@@ -11,7 +11,7 @@ using UnityEngine.UIElements;
 
 namespace RicTools.Editor.Windows
 {
-    public static class ProjectsSettingsDrawer
+    internal static class ProjectsSettingsDrawer
     {
         internal class Styles
         {

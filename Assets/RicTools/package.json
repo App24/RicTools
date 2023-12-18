@@ -1,6 +1,6 @@
 {
   "name": "io.github.app24.rictools",
-  "version": "1.7.1",
+  "version": "2.0.0",
   "displayName": "RicTools",
   "dependencies": {
     "com.solidalloy.type-references": "2.16.0"

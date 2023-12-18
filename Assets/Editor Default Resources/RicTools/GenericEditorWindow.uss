@@ -1,25 +1,26 @@
-.root{
+#WindowRoot{
 	display: flex;
 	flex-direction: row;
+	margin-top: 20px;
 }
 
-.itemList{
+#AssetList{
 	width: 25%;
 	border-right-width: 2px;
 	border-color: var(--unity-colors-window-border);
 	/*background-color: red;*/
 }
 
-.editor{
+#EditorContainer{
 	width: 75%;
 	/*background-color: var(--unity-colors-window-border);*/
 }
 
-#EditorContainer{
+#EditorContentContainer{
 	padding-bottom:20px;
 }
 
-.searchBox{
+#EditorSearchBox{
 	position: absolute;
 	top: 1px;
 	right: 0px;
@@ -37,4 +38,8 @@
 
 .itemButton.pressed{
 	background-color: var(--unity-colors-window-border);
+}
+
+#EditorToolbar{
+	height: 20px;
 }

@@ -2,8 +2,8 @@ using RicTools.ScriptableObjects;
 
 namespace RicTools.Managers
 {
-    public abstract class DataGenericManager<T, D> : SingletonGenericManager<T> where T : DataGenericManager<T, D> where D : DataManagerScriptableObject
+    public abstract class DataGenericManager<ManagerType, DataType> : SingletonGenericManager<ManagerType> where ManagerType : DataGenericManager<ManagerType, DataType> where DataType : DataManagerScriptableObject
     {
-        public D data;
+        public DataType data;
     }
 }

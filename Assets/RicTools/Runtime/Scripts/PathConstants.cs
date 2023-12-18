@@ -5,7 +5,7 @@ namespace RicTools
 {
     internal static class PathConstants
     {
-        public const string SCRIPTABLES_FOLDER = "ScriptableObjects";
+        public const string SCRIPTABLES_FOLDER = "ScriptableObjects/" + RESOURCES_FOLDER;
 
         public const string RICTOOLS_FOLDER = "RicTools";
 
@@ -26,9 +26,6 @@ namespace RicTools
 
         public const string RUNTIME_SETTINGS_FILE_PATH = RUNTIME_SETTINGS_NAME;
         public const string RUNTIME_SETTINGS_NAME = "RicTools_Settings";
-
-        public const string AVAILABLES_FOLDER = ASSETS_FOLDER + "/" + SCRIPTABLES_FOLDER + "/" + RESOURCES_FOLDER + "/" + RESOURCES_AVAILABLES_FOLDER;
-        public const string RESOURCES_AVAILABLES_FOLDER = "Availables";
 
         public const string TEMPLATES_PATH = ASSETS_FOLDER + "/" + RICTOOLS_FOLDER + "/" + EDITOR_FOLDER + "/" + TEMPLATES_FOLDER;
         public const string TEMPLATES_FOLDER = "Templates";

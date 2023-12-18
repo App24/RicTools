@@ -10,6 +10,8 @@ namespace RicTools
         [SerializeField]
         private bool inverseLookAt = true;
 
+        public Transform target;
+
         private void OnEnable()
         {
             RenderPipelineManager.beginCameraRendering += RenderPipelineManager_beginCameraRendering;
@@ -17,7 +19,7 @@ namespace RicTools
 
         private void RenderPipelineManager_beginCameraRendering(ScriptableRenderContext renderContext, Camera currentCamera)
         {
-            var target = currentCamera.transform;
+            var target = this.target ? this.target : currentCamera.transform;
             var position = target.position;
 
             if (inverseLookAt)
@@ -31,11 +33,6 @@ namespace RicTools
         private void OnDisable()
         {
             RenderPipelineManager.beginCameraRendering -= RenderPipelineManager_beginCameraRendering;
-        }
-
-        private void OnDestroy()
-        {
-            transform.rotation = Quaternion.identity;
         }
     }
 }

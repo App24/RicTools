@@ -1,4 +1,6 @@
-﻿using System;
+﻿using NUnit.Framework;
+using System;
+using System.Collections.Generic;
 
 namespace RicTools.Editor.Utilities
 {
@@ -21,20 +23,35 @@ namespace RicTools.Editor.Utilities
             defaultValue = value;
         }
 
-        public bool IsNull()
-        {
-            return Value == null;
-        }
-
-        public override string ToString()
-        {
-            if (IsNull()) return null;
-            return Value.ToString();
-        }
-
         public void Reset()
         {
             Value = defaultValue;
+        }
+    }
+
+    [Serializable]
+    public sealed class EditorContainerList<TValueType>
+    {
+        internal List<TValueType> List { get; set; } = new List<TValueType>();
+
+        public void Load(IEnumerable<TValueType> list)
+        {
+            List = new List<TValueType>(list.Copy());
+        }
+
+        public void Clear()
+        {
+            List.Clear();
+        }
+
+        public TValueType[] ToArray()
+        {
+            return List.ToArray();
+        }
+
+        public List<TValueType> ToList()
+        {
+            return List.Copy();
         }
     }
 }

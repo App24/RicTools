@@ -417,13 +417,6 @@ namespace RicTools.Editor.Utilities
             return label;
         }
 
-        public static TabBar AddTabBar(this VisualElement root)
-        {
-            var tabBar = new TabBar(root);
-
-            return tabBar;
-        }
-
         public static void AddCommonStylesheet(this VisualElement root)
         {
             root.AddStylesheet("RicTools/Common.uss");
