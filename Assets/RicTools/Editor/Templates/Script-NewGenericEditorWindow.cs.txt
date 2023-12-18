@@ -16,7 +16,7 @@ public class #SCRIPTNAME# : GenericEditorWindow<#SCRIPTABLEOBJECT#>
 
     protected override void CreateEditorGUI()
     {
-        #NOTRIM#
+        CreateDefaultGUI();
     }
 
     protected override void LoadAsset(#SCRIPTABLEOBJECT# asset, bool isNull)

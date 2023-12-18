@@ -1,8 +1,4 @@
-using RicTools.Editor.Utilities;
 using RicTools.Editor.Windows;
-using RicTools.Utilities;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 

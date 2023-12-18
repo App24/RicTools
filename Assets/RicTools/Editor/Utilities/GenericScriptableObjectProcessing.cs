@@ -1,8 +1,6 @@
 ﻿using RicTools.Editor.Windows;
 using RicTools.ScriptableObjects;
 using RicTools.Utilities;
-using System.Collections;
-using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor;
 using UnityEditor.Callbacks;

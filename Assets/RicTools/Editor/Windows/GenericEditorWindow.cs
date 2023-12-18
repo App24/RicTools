@@ -1,15 +1,13 @@
 using RicTools.Editor.UIElements;
 using RicTools.Editor.Utilities;
+using RicTools.EditorAttributes;
 using RicTools.ScriptableObjects;
 using RicTools.Utilities;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.UIElements;
-using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.UIElements;
-using static Codice.Client.BaseCommands.Import.Commit;
 
 namespace RicTools.Editor.Windows
 {
@@ -45,8 +43,24 @@ namespace RicTools.Editor.Windows
 
         private bool saved, createdNew, reloaded, deleted;
 
+        private List<VisualElement> variableVisualElements = new List<VisualElement>();
+
+        [SerializeField]
+        private List<EditorVariableData> variableDatas = new List<EditorVariableData>();
+
         protected virtual string GetAssetName(SoType asset)
         {
+            var attribute = System.Attribute.GetCustomAttribute(typeof(SoType), typeof(DefaultScriptableObjectName)) as DefaultScriptableObjectName;
+            if (attribute != null)
+            {
+                var fieldName = attribute.FieldName;
+                var field = typeof(SoType).GetField(fieldName);
+                if (field != null && field.FieldType == typeof(string))
+                {
+                    return (string)field.GetValue(asset);
+                }
+                Debug.LogError($"No field by the name {fieldName} in type '{typeof(SoType)}' or it is not a string");
+            }
             return null;
         }
 
@@ -64,6 +78,82 @@ namespace RicTools.Editor.Windows
         protected virtual void OnDeleteAsset(SoType asset)
         {
 
+        }
+
+        protected void CreateDefaultGUI()
+        {
+            var fields = typeof(SoType).GetFields();
+            foreach (var field in fields)
+            {
+                var attribute = System.Attribute.GetCustomAttribute(field, typeof(EditorVariableAttribute)) as EditorVariableAttribute;
+                if (attribute == null) continue;
+                if (!EditorWindowTypes.HasTypeToVisualElement(field.FieldType))
+                {
+                    Debug.LogError($"Type '{field.FieldType}' does not have a visual element type");
+                    continue;
+                }
+                var visualElementType = EditorWindowTypes.GetVisualElementType(field.FieldType);
+                var visualElement = System.Activator.CreateInstance(visualElementType);
+                var labelPropertyInfo = visualElementType.GetProperty("label");
+                if (labelPropertyInfo != null)
+                {
+                    labelPropertyInfo.SetValue(visualElement, attribute.Label);
+                }
+                var allowSceneObjects = visualElementType.GetProperty("allowSceneObjects");
+                if (allowSceneObjects != null)
+                {
+                    allowSceneObjects.SetValue(visualElement, ((ObjectEditorVariableAttribute)attribute).AllowSceneObjects);
+                }
+                var objectType = visualElementType.GetProperty("objectType");
+                if (objectType != null)
+                {
+                    objectType.SetValue(visualElement, field.FieldType);
+                }
+                //var valueContainer = System.Activator.CreateInstance(typeof(EditorContainer<>).MakeGenericType(field.FieldType));
+                /*valueContainer.GetType().GetProperty("Value").SetValue(valueContainer, attribute.DefaultValue);
+                if(attribute.DefaultValue != null)
+                {
+                    valueContainer.GetType().GetField("defaultValue", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).SetValue(valueContainer, attribute.DefaultValue);
+                }*/
+                visualElementType.GetProperty("value").SetValue(visualElement, attribute.DefaultValue);
+                onLoad += () =>
+                {
+                    //visualElementType.GetProperty("value").SetValue(visualElement, valueContainer.GetType().GetProperty("Value").GetValue(valueContainer));
+                };
+                var variableData = new EditorVariableData();
+                variableData.GetType().GetField("fieldName").SetValue(variableData, field.Name);
+                //variableData.GetType().GetField("value").SetValue(variableData, System.Convert.ChangeType(valueContainer, typeof(EditorContainer<object>)));
+                variableData.GetType().GetField("defaultValue").SetValue(variableData, attribute.DefaultValue);
+                variableData.GetType().GetField("visualElementIndex").SetValue(variableData, variableVisualElements.Count);
+
+                /*var registerValueChangeCallbackMethods = visualElementType.GetMethods();
+                foreach(var method in registerValueChangeCallbackMethods)
+                {
+                    if (method.Name != "RegisterCallback") continue;
+                    if(method.GetGenericArguments().Length > 1) continue;
+                    if (method.GetParameters()[1].ParameterType != typeof(TrickleDown)) continue;
+                    var callback = System.Delegate.CreateDelegate(typeof(EventCallback<>).MakeGenericType(typeof(ChangeEvent<>).MakeGenericType(typeof(object))), variableData, variableData.GetType().GetMethod("RegisterValueChange"));
+                    System.Action<object> test = (data) =>
+                    {
+                        Debug.Log("ds");
+                    };
+                    method.Invoke(visualElement, new object[] { callback, TrickleDown.NoTrickleDown });
+                }*/
+                /*if(registerValueChangeCallbackMethod != null)
+                {
+                    //EventCallback<ChangeEvent<T>> callback = null;
+                    //var callback = System.Delegate.CreateDelegate(typeof(EventCallback<>).MakeGenericType(typeof(ChangeEvent<>).MakeGenericType(field.FieldType)), visualElement, registerValueChangeCallbackMethod);
+                    System.Action<object> test = (data) =>
+                    {
+                        Debug.Log("ds");
+                    };
+                    registerValueChangeCallbackMethod.Invoke(visualElement, new object[] { test });
+                }*/
+
+                variableDatas.Add(variableData);
+                variableVisualElements.Add((VisualElement)visualElement);
+                editorContainer.Add((VisualElement)visualElement);
+            }
         }
 
         protected virtual void OnEnable()
@@ -367,6 +457,15 @@ namespace RicTools.Editor.Windows
                 asset = CreateInstance<SoType>();
             }
 
+            foreach (var editorVariableData in this.variableDatas)
+            {
+                if (variableVisualElements.Count < editorVariableData.visualElementIndex) continue;
+                var visualElement = variableVisualElements[editorVariableData.visualElementIndex];
+                var ValueProperty = visualElement.GetType().GetProperty("value");
+                var value = ValueProperty.GetValue(visualElement);
+                asset.GetType().GetField(editorVariableData.fieldName).SetValue(asset, value);
+            }
+
             SaveAsset(ref asset);
             asset.guid = guid;
 
@@ -437,7 +536,25 @@ namespace RicTools.Editor.Windows
         {
             scriptableObject = asset;
 
-            LoadAsset(asset, asset == null);
+            bool isNull = asset == null;
+
+            foreach (var editorVariableData in this.variableDatas)
+            {
+                if (variableVisualElements.Count <= editorVariableData.visualElementIndex) continue;
+                var visualElement = variableVisualElements[editorVariableData.visualElementIndex];
+                var type = visualElement.GetType().GetProperty("value");
+                if (isNull)
+                {
+                    type.SetValue(visualElement, editorVariableData.defaultValue);
+                }
+                else
+                {
+                    var value = asset.GetType().GetField(editorVariableData.fieldName).GetValue(asset);
+                    type.SetValue(visualElement, value);
+                }
+            }
+
+            LoadAsset(asset, isNull);
 
             onLoad?.Invoke();
         }
@@ -609,5 +726,14 @@ namespace RicTools.Editor.Windows
             this.isComplete = isComplete;
             this.completeCriteria = completeCriteria;
         }
+    }
+
+    [System.Serializable]
+    internal class EditorVariableData
+    {
+        public string fieldName;
+        //public EditorContainer<object> value;
+        public object defaultValue;
+        public int visualElementIndex;
     }
 }
