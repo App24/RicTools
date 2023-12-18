@@ -121,7 +121,7 @@ namespace RicTools.Editor.Windows
                 var button = new ToolbarButton(NewAsset)
                 {
                     text = "New (Ctrl + N)",
-                    focusable=false
+                    focusable = false
                 };
 
                 toolbar.Add(button);
@@ -138,7 +138,7 @@ namespace RicTools.Editor.Windows
             }
 
             {
-                var button = new ToolbarButton(()=>DeleteAsset(guid))
+                var button = new ToolbarButton(() => DeleteAsset(guid))
                 {
                     text = "Delete (Del)",
                     focusable = false
@@ -257,7 +257,7 @@ namespace RicTools.Editor.Windows
         {
             currentSearch = search.ToLower();
 
-            foreach(var button in assetButtonList)
+            foreach (var button in assetButtonList)
             {
                 var index = (int)button.userData;
                 var identifier = GetAssetIdentifier(loadedAssets[index].asset).ToLower();
@@ -284,7 +284,7 @@ namespace RicTools.Editor.Windows
             assetListContainer.Clear();
             assetButtonList.Clear();
 
-            foreach(var asset in loadedAssets)
+            foreach (var asset in loadedAssets)
             {
                 AddAssetButton(asset.asset);
             }
@@ -292,7 +292,7 @@ namespace RicTools.Editor.Windows
 
         private void AddAssetButton(SoType asset)
         {
-            var button = new Button(()=>LoadGUID(asset.guid))
+            var button = new Button(() => LoadGUID(asset.guid))
             {
                 text = GetAssetIdentifier(asset),
                 userData = assetButtonList.Count
@@ -321,7 +321,7 @@ namespace RicTools.Editor.Windows
 
             var name = GetAssetName(asset);
 
-            if(name != null)
+            if (name != null)
                 identifier = $"{name} - {identifier}";
 
             return identifier;
@@ -416,7 +416,7 @@ namespace RicTools.Editor.Windows
         {
             this.guid = guid;
 
-            foreach(var button in assetButtonList)
+            foreach (var button in assetButtonList)
             {
                 var index = (int)button.userData;
 
@@ -540,7 +540,7 @@ namespace RicTools.Editor.Windows
 
         private void UpdateDebugElements()
         {
-            foreach(var element in debugElements)
+            foreach (var element in debugElements)
             {
                 UpdateDebugElement(element);
             }

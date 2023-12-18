@@ -16,11 +16,11 @@ namespace RicTools.Editor.Utilities
         {
             var temp = AssetDatabase.LoadMainAssetAtPath(AssetPath);
             if (temp == null) return AssetDeleteResult.DidNotDelete;
-            if(temp is GenericScriptableObject asset)
+            if (temp is GenericScriptableObject asset)
             {
                 var openedWindows = Resources.FindObjectsOfTypeAll<EditorWindow>();
 
-                foreach(var window in openedWindows)
+                foreach (var window in openedWindows)
                 {
                     var type = window.GetType();
                     if (!RicUtilities.IsSubclassOfRawGeneric(typeof(GenericEditorWindow<>), type)) continue;

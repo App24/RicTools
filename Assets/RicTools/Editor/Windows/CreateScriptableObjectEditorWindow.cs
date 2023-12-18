@@ -103,7 +103,7 @@ namespace RicTools.Editor.Windows
             Close();
 
             EditorPrefs.SetBool("ReadyToUpdateSettings", true);
-            
+
             var path = ToolUtilities.GetSelectedPathOrFallback();
             if (useCurrentProjectLocation)
             {

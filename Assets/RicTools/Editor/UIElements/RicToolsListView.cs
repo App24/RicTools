@@ -21,11 +21,11 @@ namespace RicTools.Editor.UIElements
             this.getDefaultValue = getDefaultValue;
             listView.showAddRemoveFooter = true;
             listView.showBorder = true;
-            listView.showFoldoutHeader= true;
+            listView.showFoldoutHeader = true;
             listView.headerTitle = "Header";
             listView.showBoundCollectionSize = true;
             listView.fixedItemHeight = ITEM_HEIGHT;
-            listView.makeItem += ()=>
+            listView.makeItem += () =>
             {
                 var root = new VisualElement();
 
@@ -35,7 +35,7 @@ namespace RicTools.Editor.UIElements
 
                 return root;
             };
-            listView.bindItem += (root, index)=>
+            listView.bindItem += (root, index) =>
             {
                 root.userData = index;
                 BindItem(root, index);
@@ -77,7 +77,7 @@ namespace RicTools.Editor.UIElements
 
     public sealed class BasicListView<TValueType, VisualElementType> : RicToolsListView<TValueType> where VisualElementType : VisualElement, INotifyValueChanged<TValueType>, new()
     {
-        public BasicListView(EditorContainerList<TValueType> editorContainerList) : this(editorContainerList , () => default)
+        public BasicListView(EditorContainerList<TValueType> editorContainerList) : this(editorContainerList, () => default)
         {
 
         }
