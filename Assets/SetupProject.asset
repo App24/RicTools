@@ -12,4 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bebb0b84a2c11f341950b617db7f8e0c, type: 3}
   m_Name: SetupProject
   m_EditorClassIdentifier: 
-  folders: []
+  projectName: 
+  folders:
+  - Prefabs
+  assemblies:
+  - {fileID: 5897886265953266890, guid: 6c63635d1ed4ca0448ea34cb3369dccf, type: 3}
+  editorAssemblies:
+  - {fileID: 5897886265953266890, guid: c93717e28b44a254da60371f407b042d, type: 3}
