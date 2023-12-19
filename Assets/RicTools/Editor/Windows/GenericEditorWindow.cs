@@ -83,6 +83,7 @@ namespace RicTools.Editor.Windows
         protected void CreateDefaultGUI()
         {
             var fields = typeof(SoType).GetFields();
+            var temp = CreateInstance<SoType>();
             foreach (var field in fields)
             {
                 var attribute = System.Attribute.GetCustomAttribute(field, typeof(EditorVariableAttribute)) as EditorVariableAttribute;
@@ -93,67 +94,33 @@ namespace RicTools.Editor.Windows
                     continue;
                 }
                 var visualElementType = EditorWindowTypes.GetVisualElementType(field.FieldType);
-                var visualElement = System.Activator.CreateInstance(visualElementType);
-                var labelPropertyInfo = visualElementType.GetProperty("label");
-                if (labelPropertyInfo != null)
+                var defaultValue = attribute.DefaultValue;
+                if (defaultValue == null)
                 {
-                    labelPropertyInfo.SetValue(visualElement, attribute.Label);
+                    defaultValue = field.GetValue(temp);
+                    if (defaultValue == null)
+                    {
+                        if (field.FieldType.IsEnum)
+                        {
+                            defaultValue = field.FieldType.GetEnumValues().GetValue(0);
+                        }
+                        else if (field.FieldType.IsValueType)
+                        {
+                            defaultValue = System.Activator.CreateInstance(field.FieldType);
+                        }
+                    }
                 }
-                var allowSceneObjects = visualElementType.GetProperty("allowSceneObjects");
-                if (allowSceneObjects != null)
-                {
-                    allowSceneObjects.SetValue(visualElement, ((ObjectEditorVariableAttribute)attribute).AllowSceneObjects);
-                }
-                var objectType = visualElementType.GetProperty("objectType");
-                if (objectType != null)
-                {
-                    objectType.SetValue(visualElement, field.FieldType);
-                }
-                //var valueContainer = System.Activator.CreateInstance(typeof(EditorContainer<>).MakeGenericType(field.FieldType));
-                /*valueContainer.GetType().GetProperty("Value").SetValue(valueContainer, attribute.DefaultValue);
-                if(attribute.DefaultValue != null)
-                {
-                    valueContainer.GetType().GetField("defaultValue", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).SetValue(valueContainer, attribute.DefaultValue);
-                }*/
-                visualElementType.GetProperty("value").SetValue(visualElement, attribute.DefaultValue);
-                onLoad += () =>
-                {
-                    //visualElementType.GetProperty("value").SetValue(visualElement, valueContainer.GetType().GetProperty("Value").GetValue(valueContainer));
-                };
+                var visualElement = visualElementType.CreateVisualElement(attribute.Label, defaultValue, field.FieldType, attribute.ExtraData);
                 var variableData = new EditorVariableData();
-                variableData.GetType().GetField("fieldName").SetValue(variableData, field.Name);
-                //variableData.GetType().GetField("value").SetValue(variableData, System.Convert.ChangeType(valueContainer, typeof(EditorContainer<object>)));
-                variableData.GetType().GetField("defaultValue").SetValue(variableData, attribute.DefaultValue);
-                variableData.GetType().GetField("visualElementIndex").SetValue(variableData, variableVisualElements.Count);
-
-                /*var registerValueChangeCallbackMethods = visualElementType.GetMethods();
-                foreach(var method in registerValueChangeCallbackMethods)
-                {
-                    if (method.Name != "RegisterCallback") continue;
-                    if(method.GetGenericArguments().Length > 1) continue;
-                    if (method.GetParameters()[1].ParameterType != typeof(TrickleDown)) continue;
-                    var callback = System.Delegate.CreateDelegate(typeof(EventCallback<>).MakeGenericType(typeof(ChangeEvent<>).MakeGenericType(typeof(object))), variableData, variableData.GetType().GetMethod("RegisterValueChange"));
-                    System.Action<object> test = (data) =>
-                    {
-                        Debug.Log("ds");
-                    };
-                    method.Invoke(visualElement, new object[] { callback, TrickleDown.NoTrickleDown });
-                }*/
-                /*if(registerValueChangeCallbackMethod != null)
-                {
-                    //EventCallback<ChangeEvent<T>> callback = null;
-                    //var callback = System.Delegate.CreateDelegate(typeof(EventCallback<>).MakeGenericType(typeof(ChangeEvent<>).MakeGenericType(field.FieldType)), visualElement, registerValueChangeCallbackMethod);
-                    System.Action<object> test = (data) =>
-                    {
-                        Debug.Log("ds");
-                    };
-                    registerValueChangeCallbackMethod.Invoke(visualElement, new object[] { test });
-                }*/
+                variableData.defaultValue = defaultValue;
+                variableData.fieldName = field.Name;
+                variableData.visualElementIndex = variableVisualElements.Count;
 
                 variableDatas.Add(variableData);
-                variableVisualElements.Add((VisualElement)visualElement);
-                editorContainer.Add((VisualElement)visualElement);
+                variableVisualElements.Add(visualElement);
+                editorContainer.Add(visualElement);
             }
+            DestroyImmediate(temp);
         }
 
         protected virtual void OnEnable()

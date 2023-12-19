@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 
@@ -47,6 +48,14 @@ namespace RicTools.Utilities
             var name = type.Name;
             name = name.Replace("ScriptableObject", "");
             return $"{PathConstants.ASSETS_FOLDER}/{PathConstants.SCRIPTABLES_FOLDER}/{name}s";
+        }
+
+        public static void Set<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, TValue value)
+        {
+            if (dictionary.ContainsKey(key))
+                dictionary[key] = value;
+            else
+                dictionary.Add(key, value);
         }
     }
 }
