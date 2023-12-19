@@ -13,9 +13,16 @@ MonoBehaviour:
   m_Name: SetupProject
   m_EditorClassIdentifier: 
   projectName: 
+  scriptsFolder: Scripts
+  editorFolder: Editor
   folders:
   - Prefabs
+  - Art/Materials
+  - Art/Shaders
+  - Art/Models
   assemblies:
   - {fileID: 5897886265953266890, guid: 6c63635d1ed4ca0448ea34cb3369dccf, type: 3}
+  - {fileID: 5897886265953266890, guid: 6055be8ebefd69e48b49212b09b47b2f, type: 3}
   editorAssemblies:
   - {fileID: 5897886265953266890, guid: c93717e28b44a254da60371f407b042d, type: 3}
+  - {fileID: 5897886265953266890, guid: 6546d7765b4165b40850b3667f981c26, type: 3}
