@@ -160,6 +160,8 @@ namespace RicTools.Editor.Windows
 
                 string defaultNewFileName = Path.Combine("Assets/Editor", editorWindow + ".cs");
 
+                rootNamespace = CompilationPipeline.GetAssemblyRootNamespaceFromScriptPath("Assets/Editor/temp.cs");
+
                 string templatePath = PathConstants.TEMPLATES_PATH + "/Script-NewGenericEditorWindow.cs.txt";
 
                 editorWindowFile = FileUtilities.CreateScriptAssetFromTemplate(defaultNewFileName, templatePath, (content) =>
@@ -170,9 +172,6 @@ namespace RicTools.Editor.Windows
                     return content;
                 });
             }
-
-            EditorPrefs.SetString("CustomSo", $"{rootNamespace}{soName},{dll}");
-            EditorPrefs.SetString("EditorWindow", $"{rootNamespace}{editorWindow},{dll}");
 
             if (openInEditor.Value)
             {
