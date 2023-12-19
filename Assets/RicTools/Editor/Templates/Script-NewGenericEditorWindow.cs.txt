@@ -8,10 +8,10 @@ using UnityEditor;
     #ROOTNAMESPACEBEGIN#
 public class #SCRIPTNAME# : GenericEditorWindow<#SCRIPTABLEOBJECT#>
 {
-    [MenuItem("Window/RicTools Windows/#SCRIPTNAME#")]
+    [MenuItem("#MENULOCATION#/#WINDOWNAME#")]
 	public static #SCRIPTNAME# ShowWindow()
     {
-        return GetWindow<#SCRIPTNAME#>("#SCRIPTNAME#");
+        return GetWindow<#SCRIPTNAME#>("#WINDOWNAME#");
     }
 
     protected override void CreateEditorGUI()

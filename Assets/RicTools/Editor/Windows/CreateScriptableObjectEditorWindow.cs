@@ -19,8 +19,15 @@ namespace RicTools.Editor.Windows
         [SerializeField]
         private EditorContainer<bool> openInEditor = new EditorContainer<bool>();
 
+        [SerializeField]
+        private EditorContainer<string> windowName = new EditorContainer<string>();
+
+        [SerializeField]
+        private EditorContainer<string> menuItem = new EditorContainer<string>("Windows/RicTools Windows");
+
         private TextField soNameTextField;
         private TextField editorNameTextField;
+        private TextField windowNameTextField;
 
         private VisualElement emptyFieldWarningContainer;
 
@@ -43,6 +50,11 @@ namespace RicTools.Editor.Windows
             rootVisualElement.AddLabel("Assets To Create");
             rootVisualElement.AddSeparator(new Color32(37, 37, 37, 255));
 
+            EventCallback<FocusEvent> focusEvent = (callback) =>
+            {
+                ToggleWarning(false);
+            };
+
             soNameTextField = rootVisualElement.AddTextField(scriptableObjectName, "Scriptable Object", (old) =>
             {
                 if (editorWindowName.Value == null || editorWindowName.Value == old)
@@ -52,17 +64,29 @@ namespace RicTools.Editor.Windows
 
                 UpdateTextFields();
             });
-            editorNameTextField = rootVisualElement.AddTextField(editorWindowName, "Editor Window");
+            editorNameTextField = rootVisualElement.AddTextField(editorWindowName, "Editor Window", (old) =>
+            {
+                if (windowName.Value == null || windowName.Value == old)
+                {
+                    windowName.Value = editorWindowName;
+                }
+
+                UpdateTextFields();
+            });
+
+            rootVisualElement.AddSeparator();
+
+            windowNameTextField = rootVisualElement.AddTextField(windowName, "Window Name");
 
             {
+                var element = rootVisualElement.AddTextField(menuItem, "Menu Location");
+                element.RegisterCallback(focusEvent);
+            }
 
-                EventCallback<FocusEvent> focusEvent = (callback) =>
-                {
-                    ToggleWarning(false);
-                };
-
+            {
                 soNameTextField.RegisterCallback(focusEvent);
                 editorNameTextField.RegisterCallback(focusEvent);
+                windowNameTextField.RegisterCallback(focusEvent);
             }
 
             {
@@ -86,11 +110,12 @@ namespace RicTools.Editor.Windows
         {
             soNameTextField.value = scriptableObjectName.Value;
             editorNameTextField.value = editorWindowName.Value;
+            windowNameTextField.value = windowName.Value;
         }
 
         private void CreateAssets()
         {
-            if (string.IsNullOrWhiteSpace(scriptableObjectName.Value) || string.IsNullOrWhiteSpace(editorWindowName.Value))
+            if (string.IsNullOrWhiteSpace(scriptableObjectName.Value) || string.IsNullOrWhiteSpace(editorWindowName.Value) || string.IsNullOrEmpty(this.windowName) || string.IsNullOrEmpty(menuItem))
             {
                 ToggleWarning(true);
                 return;
@@ -109,6 +134,8 @@ namespace RicTools.Editor.Windows
 
             string soName = scriptableObjectName + "ScriptableObject";
             string editorWindow = editorWindowName + "EditorWindow";
+            string windowName = this.windowName;
+            string menuLocation = menuItem;
 
             string rootNamespace = CompilationPipeline.GetAssemblyRootNamespaceFromScriptPath(path + "/temp.cs");
 
@@ -138,6 +165,8 @@ namespace RicTools.Editor.Windows
                 editorWindowFile = FileUtilities.CreateScriptAssetFromTemplate(defaultNewFileName, templatePath, (content) =>
                 {
                     content = content.Replace("#SCRIPTABLEOBJECT#", soName);
+                    content = content.Replace("#WINDOWNAME#", windowName);
+                    content = content.Replace("#MENULOCATION#", menuLocation);
                     return content;
                 });
             }
