@@ -65,7 +65,7 @@ namespace RicTools
                 CreateFolders();
                 CreateAssemblyDefinitions();
 
-                //DeleteSetup();
+                DeleteSetup();
             }
         }
 
