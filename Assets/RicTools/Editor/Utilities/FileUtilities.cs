@@ -1,6 +1,8 @@
+using AsmdefHelper.CustomCreate.Editor;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEditor.Compilation;
@@ -147,6 +149,15 @@ namespace RicTools.Editor.Utilities
                 _ => EditorGUIUtility.IconContent("TextAsset Icon").image as Texture2D,
             }, instanceID: 0, endAction: endAction, pathName: defaultNewFileName, resourceFile: templatePath);
             AssetDatabase.Refresh();
+        }
+
+        public static void CreateAsmDef(AssemblyDefinitionJson asmdef, string filePath, bool refreshDatabase = true)
+        {
+            var asmdefJson = JsonUtility.ToJson(asmdef, true);
+            var asmdefPath = $"{filePath}/{asmdef.name}.asmdef";
+            File.WriteAllText(asmdefPath, asmdefJson, Encoding.UTF8);
+            if (refreshDatabase)
+                AssetDatabase.Refresh();
         }
     }
 }

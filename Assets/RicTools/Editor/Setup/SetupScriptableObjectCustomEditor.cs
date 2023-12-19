@@ -1,4 +1,5 @@
 using AsmdefHelper.CustomCreate.Editor;
+using RicTools.Editor.Utilities;
 using RicTools.Utilities;
 using System.Collections.Generic;
 using System.IO;
@@ -30,92 +31,110 @@ namespace RicTools
 
         public override void OnInspectorGUI()
         {
-            base.OnInspectorGUI();
-
             var setup = (SetupScriptableObject)target;
 
-            if (GUILayout.Button("Delete"))
+            string previousProjectName = setup.projectName;
+
+            base.OnInspectorGUI();
+
+            if(setup.rootNamespace == previousProjectName)
+            {
+                setup.rootNamespace = setup.projectName;
+            }
+
+
+            if (GUILayout.Button("Delete Setup"))
             {
                 if (EditorUtility.DisplayDialog("Warning", "Delete setup?", "Yes", "No"))
                     DeleteSetup();
             }
 
-            if (GUILayout.Button("Setup"))
+            if (GUILayout.Button("Setup Project"))
             {
-                if (string.IsNullOrEmpty(setup.projectName))
+                if (setup.createAssemblyDefinitions && string.IsNullOrEmpty(setup.projectName))
                 {
                     EditorUtility.DisplayDialog("Error", "Project Name cannot be null", "Ok");
                     return;
                 }
-                var scriptsFolder = $"Assets/{setup.scriptsFolder}";
-                var editorFolder = $"Assets/{setup.editorFolder}";
-                RicUtilities.CreateAssetFolder(scriptsFolder);
-                RicUtilities.CreateAssetFolder(editorFolder);
 
-                foreach (var folder in setup.folders)
+                if (string.IsNullOrEmpty(setup.rootNamespace))
                 {
-                    RicUtilities.CreateAssetFolder($"Assets/{folder}");
+                    setup.rootNamespace = setup.projectName;
                 }
 
-                List<string> references = new List<string>();
+                CreateFolders();
+                CreateAssemblyDefinitions();
 
-                foreach (var assemblyDef in setup.assemblies)
-                {
-                    references.Add("GUID:" + AssetDatabase.GUIDFromAssetPath(AssetDatabase.GetAssetPath(assemblyDef)).ToString());
-                }
-
-                List<string> editorReferences = new List<string>();
-
-                editorReferences.AddRange(references);
-
-                foreach (var assemblyDef in setup.editorAssemblies)
-                {
-                    editorReferences.Add("GUID:" + AssetDatabase.GUIDFromAssetPath(AssetDatabase.GetAssetPath(assemblyDef)).ToString());
-                }
-
-                {
-                    var asmdef = new AssemblyDefinitionJson
-                    {
-                        name = setup.projectName,
-#if UNITY_2020_2_OR_NEWER
-                        rootNamespace = setup.projectName,
-#endif
-                        allowUnsafeCode = false,
-                        autoReferenced = true,
-                        overrideReferences = false,
-                        noEngineReferences = false,
-                        references = references.ToArray(),
-                        includePlatforms = new string[0]
-                    };
-                    var asmdefJson = JsonUtility.ToJson(asmdef, true);
-                    var asmdefPath = $"{scriptsFolder}/{setup.projectName}.asmdef";
-                    File.WriteAllText(asmdefPath, asmdefJson, Encoding.UTF8);
-                    AssetDatabase.Refresh();
-                }
-
-                {
-                    editorReferences.Add("GUID:" + AssetDatabase.AssetPathToGUID($"{scriptsFolder}/{setup.projectName}.asmdef").ToString());
-                    var editorAsmdef = new AssemblyDefinitionJson
-                    {
-                        name = setup.projectName + ".Editor",
-#if UNITY_2020_2_OR_NEWER
-                        rootNamespace = setup.projectName + ".Editor",
-#endif
-                        allowUnsafeCode = false,
-                        autoReferenced = true,
-                        overrideReferences = false,
-                        noEngineReferences = false,
-                        references = editorReferences.ToArray(),
-                        includePlatforms = new string[] { "Editor" }
-                    };
-                    var asmdefJson = JsonUtility.ToJson(editorAsmdef, true);
-                    var asmdefPath = $"{editorFolder}/{setup.projectName}.Editor.asmdef";
-                    File.WriteAllText(asmdefPath, asmdefJson, Encoding.UTF8);
-                    AssetDatabase.Refresh();
-                }
-
-                DeleteSetup();
+                //DeleteSetup();
             }
+        }
+
+        private void CreateFolders()
+        {
+            var setup = (SetupScriptableObject)target;
+            var scriptsFolder = $"Assets/{setup.scriptsFolder}";
+            var editorFolder = $"Assets/{setup.editorFolder}";
+            RicUtilities.CreateAssetFolder(scriptsFolder);
+            RicUtilities.CreateAssetFolder(editorFolder);
+
+            foreach (var folder in setup.folders)
+            {
+                RicUtilities.CreateAssetFolder($"Assets/{folder}");
+            }
+        }
+
+        private void CreateAssemblyDefinitions()
+        {
+            var setup = (SetupScriptableObject)target;
+            if (!setup.createAssemblyDefinitions) return;
+            var scriptsFolder = $"Assets/{setup.scriptsFolder}";
+            var editorFolder = $"Assets/{setup.editorFolder}";
+
+            List<string> references = new List<string>();
+
+            foreach (var assemblyDef in setup.assemblyDefinitions)
+            {
+                references.Add("GUID:" + AssetDatabase.GUIDFromAssetPath(AssetDatabase.GetAssetPath(assemblyDef)).ToString());
+            }
+
+            List<string> editorReferences = new List<string>();
+
+            editorReferences.AddRange(references);
+
+            foreach (var assemblyDef in setup.editorAssemblyDefinitions)
+            {
+                editorReferences.Add("GUID:" + AssetDatabase.GUIDFromAssetPath(AssetDatabase.GetAssetPath(assemblyDef)).ToString());
+            }
+
+            FileUtilities.CreateAsmDef(new AssemblyDefinitionJson()
+            {
+                name = setup.projectName,
+#if UNITY_2020_2_OR_NEWER
+                rootNamespace = setup.rootNamespace,
+#endif
+                allowUnsafeCode = false,
+                autoReferenced = true,
+                overrideReferences = false,
+                noEngineReferences = false,
+                references = references.ToArray(),
+                includePlatforms = new string[0]
+            }, scriptsFolder);
+
+            editorReferences.Add("GUID:" + AssetDatabase.AssetPathToGUID($"{scriptsFolder}/{setup.projectName}.asmdef").ToString());
+
+            FileUtilities.CreateAsmDef(new AssemblyDefinitionJson()
+            {
+                name = setup.projectName + ".Editor",
+#if UNITY_2020_2_OR_NEWER
+                rootNamespace = setup.rootNamespace + ".Editor",
+#endif
+                allowUnsafeCode = false,
+                autoReferenced = true,
+                overrideReferences = false,
+                noEngineReferences = false,
+                references = editorReferences.ToArray(),
+                includePlatforms = new string[] { "Editor" }
+            }, editorFolder);
         }
     }
 }
