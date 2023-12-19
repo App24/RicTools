@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bebb0b84a2c11f341950b617db7f8e0c, type: 3}
   m_Name: SetupProject
   m_EditorClassIdentifier: 
-  createAssemblyDefinitions: 0
+  createAssemblyDefinitions: 1
   projectName: 
   rootNamespace: 
   assemblyDefinitions:
