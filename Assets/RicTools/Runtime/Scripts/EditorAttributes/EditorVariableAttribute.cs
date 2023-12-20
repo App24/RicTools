@@ -9,10 +9,5 @@ namespace RicTools.EditorAttributes
         public string Label { get; set; }
         public object DefaultValue { get; set; }
         public Dictionary<string, object> ExtraData { get; set; } = new Dictionary<string, object>();
-
-        public EditorVariableAttribute(string label)
-        {
-            this.Label = label;
-        }
     }
 }

@@ -2,8 +2,6 @@ using AsmdefHelper.CustomCreate.Editor;
 using RicTools.Editor.Utilities;
 using RicTools.Utilities;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using UnityEditor;
 using UnityEngine;
 
@@ -37,7 +35,7 @@ namespace RicTools
 
             base.OnInspectorGUI();
 
-            if(setup.rootNamespace == previousProjectName)
+            if (setup.rootNamespace == previousProjectName)
             {
                 setup.rootNamespace = setup.projectName;
             }

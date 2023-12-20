@@ -94,6 +94,9 @@ namespace RicTools.Editor.Windows
                     continue;
                 }
                 var visualElementType = EditorWindowTypes.GetVisualElementType(field.FieldType);
+                var label = field.Name;
+                if (!string.IsNullOrEmpty(attribute.Label))
+                    label = attribute.Label;
                 var defaultValue = attribute.DefaultValue;
                 if (defaultValue == null)
                 {
@@ -110,7 +113,7 @@ namespace RicTools.Editor.Windows
                         }
                     }
                 }
-                var visualElement = visualElementType.CreateVisualElement(attribute.Label, defaultValue, field.FieldType, attribute.ExtraData);
+                var visualElement = visualElementType.CreateVisualElement(label, defaultValue, field.FieldType, attribute.ExtraData);
                 var variableData = new EditorVariableData();
                 variableData.defaultValue = defaultValue;
                 variableData.fieldName = field.Name;

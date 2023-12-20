@@ -31,9 +31,5 @@ namespace RicTools.EditorAttributes
                 ExtraData.Set("hdr", value);
             }
         }
-
-        public ColorEditorVariableAttribute(string label) : base(label)
-        {
-        }
     }
 }

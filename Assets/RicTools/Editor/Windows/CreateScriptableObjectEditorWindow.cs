@@ -23,7 +23,7 @@ namespace RicTools.Editor.Windows
         private EditorContainer<string> windowName = new EditorContainer<string>();
 
         [SerializeField]
-        private EditorContainer<string> menuItem = new EditorContainer<string>("Windows/RicTools Windows");
+        private EditorContainer<string> menuItem = new EditorContainer<string>("Window/RicTools Windows");
 
         private TextField soNameTextField;
         private TextField editorNameTextField;

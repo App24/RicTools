@@ -4,7 +4,7 @@ namespace RicTools.EditorAttributes
 {
     public class TextBoxEditorVariableAttribute : EditorVariableAttribute
     {
-        public TextBoxEditorVariableAttribute(string label) : base(label)
+        public TextBoxEditorVariableAttribute()
         {
             ExtraData.Set("multiline", true);
         }

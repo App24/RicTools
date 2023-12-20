@@ -18,7 +18,7 @@ namespace RicTools.EditorAttributes
             }
         }
 
-        public SliderEditorVariableAttribute(string label, int minValue, int maxValue) : base(label)
+        public SliderEditorVariableAttribute(int minValue, int maxValue)
         {
             ExtraData.Add("isSlider", true);
             ExtraData.Add("minValue", minValue);
@@ -26,7 +26,7 @@ namespace RicTools.EditorAttributes
             ShowInputField = true;
         }
 
-        public SliderEditorVariableAttribute(string label, float minValue, float maxValue) : base(label)
+        public SliderEditorVariableAttribute(float minValue, float maxValue)
         {
             ExtraData.Add("isSlider", true);
             ExtraData.Add("minValue", minValue);

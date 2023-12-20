@@ -14,9 +14,5 @@ namespace RicTools.EditorAttributes
             }
             set { ExtraData.Set("allowSceneObjects", value); }
         }
-
-        public ObjectEditorVariableAttribute(string label) : base(label)
-        {
-        }
     }
 }
