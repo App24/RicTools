@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine.UIElements;
 
 namespace RicTools.Editor.EditorAttributes
@@ -8,8 +7,11 @@ namespace RicTools.Editor.EditorAttributes
     {
         public override Type FieldType => typeof(float);
 
-        public override VisualElement CreateVisualElement(string label, object value, Type fieldType, Dictionary<string, object> extraData)
+        public override VisualElement CreateVisualElement(EditorVariableDrawData editorVariableData)
         {
+            var value = editorVariableData.value;
+            var extraData = editorVariableData.extraData;
+
             if (value.GetType() == typeof(int))
                 value = Convert.ToSingle(value);
 
@@ -32,16 +34,26 @@ namespace RicTools.Editor.EditorAttributes
                     lowValue = (float)minValue,
                     highValue = (float)maxValue,
                     showInputField = (bool)showInputField,
-                    label = label,
+                    label = editorVariableData.label,
                     value = (float)value
                 };
+
+                slider.RegisterValueChangedCallback(callback =>
+                {
+                    editorVariableData.onValueChange?.Invoke(callback.newValue);
+                });
 
                 return slider;
             }
 
             var floatField = new FloatField();
-            floatField.label = label;
+            floatField.label = editorVariableData.label;
             floatField.value = (float)value;
+
+            floatField.RegisterValueChangedCallback(callback =>
+            {
+                editorVariableData.onValueChange?.Invoke(callback.newValue);
+            });
 
             return floatField;
         }

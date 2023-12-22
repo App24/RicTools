@@ -14,6 +14,8 @@ namespace RicTools.Managers
 
         protected virtual bool DestroyIfFound => true;
 
+        protected virtual bool DontDestroyManagerOnLoad => false;
+
         protected virtual void Awake()
         {
             SetInstance();
@@ -26,6 +28,8 @@ namespace RicTools.Managers
                 Destroy(this);
                 return false;
             }
+            if (DontDestroyManagerOnLoad)
+                DontDestroyOnLoad(gameObject);
             _instance = this as T;
             return true;
         }

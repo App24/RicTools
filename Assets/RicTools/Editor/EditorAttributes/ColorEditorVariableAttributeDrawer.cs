@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -10,13 +9,15 @@ namespace RicTools.Editor.EditorAttributes
     {
         public override Type FieldType => typeof(Color);
 
-        public override VisualElement CreateVisualElement(string label, object value, Type fieldType, Dictionary<string, object> extraData)
+        public override VisualElement CreateVisualElement(EditorVariableDrawData editorVariableData)
         {
             var colorField = new ColorField();
 
-            colorField.label = label;
+            colorField.label = editorVariableData.label;
 
-            colorField.value = (Color)value;
+            colorField.value = (Color)editorVariableData.value;
+
+            var extraData = editorVariableData.extraData;
 
             if (!extraData.TryGetValue("showAlpha", out var showAlpha))
             {
@@ -29,6 +30,11 @@ namespace RicTools.Editor.EditorAttributes
 
             colorField.showAlpha = (bool)showAlpha;
             colorField.hdr = (bool)hdr;
+
+            colorField.RegisterValueChangedCallback(callback =>
+            {
+                editorVariableData.onValueChange?.Invoke(callback.newValue);
+            });
 
             return colorField;
         }

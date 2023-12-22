@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -9,8 +8,10 @@ namespace RicTools.Editor.EditorAttributes
     {
         public override Type FieldType => typeof(int);
 
-        public override VisualElement CreateVisualElement(string label, object value, Type fieldType, Dictionary<string, object> extraData)
+        public override VisualElement CreateVisualElement(EditorVariableDrawData editorVariableData)
         {
+            var extraData = editorVariableData.extraData;
+
             if (extraData.TryGetValue("isSlider", out var _))
             {
                 extraData.TryGetValue("minValue", out var minValue);
@@ -29,16 +30,26 @@ namespace RicTools.Editor.EditorAttributes
                     lowValue = (int)minValue,
                     highValue = (int)maxValue,
                     showInputField = (bool)showInputField,
-                    label = label,
-                    value = (int)value
+                    label = editorVariableData.label,
+                    value = (int)editorVariableData.value
                 };
+
+                sliderInt.RegisterValueChangedCallback(callback =>
+                {
+                    editorVariableData.onValueChange?.Invoke(callback.newValue);
+                });
 
                 return sliderInt;
             }
 
             IntegerField integerField = new IntegerField();
-            integerField.label = label;
-            integerField.value = (int)value;
+            integerField.label = editorVariableData.label;
+            integerField.value = (int)editorVariableData.value;
+
+            integerField.RegisterValueChangedCallback(callback =>
+            {
+                editorVariableData.onValueChange?.Invoke(callback.newValue);
+            });
 
             return integerField;
         }

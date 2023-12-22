@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -10,12 +9,17 @@ namespace RicTools.Editor.EditorAttributes
     {
         public override Type FieldType => typeof(AnimationCurve);
 
-        public override VisualElement CreateVisualElement(string label, object value, Type fieldType, Dictionary<string, object> extraData)
+        public override VisualElement CreateVisualElement(EditorVariableDrawData editorVariableData)
         {
             var curveField = new CurveField();
 
-            curveField.label = label;
-            curveField.value = (AnimationCurve)value;
+            curveField.label = editorVariableData.label;
+            curveField.value = (AnimationCurve)editorVariableData.value;
+
+            curveField.RegisterValueChangedCallback(callback =>
+            {
+                editorVariableData.onValueChange?.Invoke(callback.newValue);
+            });
 
             return curveField;
         }

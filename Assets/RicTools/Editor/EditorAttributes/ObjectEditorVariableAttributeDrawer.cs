@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
@@ -9,8 +8,10 @@ namespace RicTools.Editor.EditorAttributes
     {
         public override Type FieldType => typeof(UnityEngine.Object);
 
-        public override VisualElement CreateVisualElement(string label, object value, Type fieldType, Dictionary<string, object> extraData)
+        public override VisualElement CreateVisualElement(EditorVariableDrawData editorVariableData)
         {
+            var extraData = editorVariableData.extraData;
+
             var objectField = new ObjectField();
 
             if (!extraData.TryGetValue("allowSceneObjects", out var allowSceneObjects))
@@ -18,10 +19,15 @@ namespace RicTools.Editor.EditorAttributes
                 allowSceneObjects = false;
             }
 
-            objectField.label = label;
+            objectField.label = editorVariableData.label;
             objectField.allowSceneObjects = (bool)allowSceneObjects;
-            objectField.value = (UnityEngine.Object)value;
-            objectField.objectType = fieldType;
+            objectField.value = (UnityEngine.Object)editorVariableData.value;
+            objectField.objectType = editorVariableData.fieldType;
+
+            objectField.RegisterValueChangedCallback(callback =>
+            {
+                editorVariableData.onValueChange?.Invoke(callback.newValue);
+            });
 
             return objectField;
         }

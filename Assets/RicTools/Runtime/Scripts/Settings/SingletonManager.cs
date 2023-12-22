@@ -1,6 +1,7 @@
 using RicTools.Managers;
 using RicTools.ScriptableObjects;
 using TypeReferences;
+using UnityEngine;
 
 namespace RicTools.Settings
 {
@@ -11,5 +12,11 @@ namespace RicTools.Settings
         public TypeReference manager;
 
         public DataManagerScriptableObject data;
+    }
+
+    [System.Serializable]
+    internal class SingletonPrefabManager
+    {
+        public GameObject prefab;
     }
 }

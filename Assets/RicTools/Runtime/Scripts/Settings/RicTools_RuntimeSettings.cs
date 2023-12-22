@@ -17,6 +17,12 @@ namespace RicTools.Settings
         }
         public SingletonManager[] m_singletonManagers = new SingletonManager[] { };
 
+        public static SingletonPrefabManager[] singletonPrefabManagers
+        {
+            get { return instance.m_singletonPrefabManagers; }
+        }
+        public SingletonPrefabManager[] m_singletonPrefabManagers = new SingletonPrefabManager[] { };
+
         public static RicTools_RuntimeSettings instance
         {
             get

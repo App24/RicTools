@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine.UIElements;
 
 namespace RicTools.Editor.EditorAttributes
@@ -8,16 +7,23 @@ namespace RicTools.Editor.EditorAttributes
     {
         public override Type FieldType => typeof(string);
 
-        public override VisualElement CreateVisualElement(string label, object data, Type fieldType, Dictionary<string, object> extraData)
+        public override VisualElement CreateVisualElement(EditorVariableDrawData editorVariableData)
         {
+            var extraData = editorVariableData.extraData;
+
             TextField textField = new TextField();
-            textField.label = label;
-            textField.value = (string)data;
+            textField.label = editorVariableData.label;
+            textField.value = (string)editorVariableData.value;
 
             if (!extraData.TryGetValue("multiline", out var multiline))
                 multiline = false;
 
             textField.multiline = (bool)multiline;
+
+            textField.RegisterValueChangedCallback(callback =>
+            {
+                editorVariableData.onValueChange?.Invoke(callback.newValue);
+            });
 
             return textField;
         }

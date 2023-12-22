@@ -21,6 +21,18 @@ namespace RicTools.Managers
                 }
                 CreateManager(type, singletonManager.data);
             }
+
+            foreach (var manager in RicTools_RuntimeSettings.singletonPrefabManagers)
+            {
+                var gameObject = GameObject.Instantiate(manager.prefab);
+                /*var component = gameObject.GetComponent(typeof(SingletonGenericManager<>));
+                Debug.Log(component);
+                if (component != null)
+                {
+                    if ((bool)component.GetType().GetMethodRecursive("SetInstance", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(component, null))
+                        GameObject.DontDestroyOnLoad(gameObject);
+                }*/
+            }
         }
 
         private static void CreateManager(System.Type type, DataManagerScriptableObject data = null)

@@ -20,10 +20,14 @@ namespace RicTools.Editor.Windows
             public static readonly GUIContent singletonManagersLabel = new GUIContent("Singleton Managers");
             public static readonly GUIContent singletonManagersListLabel = new GUIContent("Singleton Managers List");
 
+            public static readonly GUIContent singletonPrefabManagersLabel = new GUIContent("Singleton Managers");
+            public static readonly GUIContent singletonPrefabManagersListLabel = new GUIContent("Singleton Managers List");
+
             public static readonly GUIContent scriptableEditorsAddButtonLabel = new GUIContent("Add Scriptable Editor");
         }
 
         private static ReorderableList m_singletonManagersList;
+        private static ReorderableList m_singletonPrefabManagersList;
 
         private static SerializedObject editorSerializedObject;
         private static SerializedObject serializedObject;
@@ -59,6 +63,8 @@ namespace RicTools.Editor.Windows
             editorSerializedObject = RicTools_EditorSettings.GetSerializedObject();
             serializedObject = RicTools_RuntimeSettings.GetSerializedObject();
 
+            m_singletonPrefabManagersList = new ReorderableList(serializedObject, serializedObject.FindProperty("m_singletonPrefabManagers"), false, true, true, true);
+
             m_singletonManagersList = new ReorderableList(serializedObject, serializedObject.FindProperty("m_singletonManagers"), false, true, true, true);
 
             m_singletonManagersList.elementHeightCallback = index =>
@@ -69,6 +75,23 @@ namespace RicTools.Editor.Windows
                     return 42;
                 }
                 return 21;
+            };
+
+            m_singletonPrefabManagersList.elementHeightCallback = index =>
+            {
+                return 21;
+            };
+
+            m_singletonPrefabManagersList.drawElementCallback = (rect, index, isActive, isFocused) =>
+            {
+                var element = m_singletonPrefabManagersList.serializedProperty.GetArrayElementAtIndex(index);
+                rect.y += 2;
+                float labelWidth = 200;
+                float width = rect.width - labelWidth;
+
+                EditorGUI.LabelField(new Rect(rect.x, rect.y, labelWidth, EditorGUIUtility.singleLineHeight), "Prefab");
+                //rect.x += 110;
+                EditorGUI.PropertyField(new Rect(rect.x + labelWidth, rect.y, width, EditorGUIUtility.singleLineHeight), element.FindPropertyRelative("prefab"), GUIContent.none);
             };
 
             m_singletonManagersList.drawElementCallback = (rect, index, isActive, isFocused) =>
@@ -121,6 +144,11 @@ namespace RicTools.Editor.Windows
             {
                 EditorGUI.LabelField(rect, Styles.singletonManagersListLabel);
             };
+
+            m_singletonPrefabManagersList.drawHeaderCallback = rect =>
+            {
+                EditorGUI.LabelField(rect, Styles.singletonPrefabManagersListLabel);
+            };
         }
 
         private static void OnGUI(string searchContext)
@@ -136,6 +164,16 @@ namespace RicTools.Editor.Windows
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             GUILayout.Label(Styles.singletonManagersLabel, EditorStyles.boldLabel);
             m_singletonManagersList.DoLayoutList();
+
+            EditorGUI.indentLevel = 0;
+
+            EditorGUILayout.Space();
+            EditorGUILayout.EndVertical();
+            EditorGUI.indentLevel = 0;
+
+            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+            GUILayout.Label(Styles.singletonPrefabManagersLabel, EditorStyles.boldLabel);
+            m_singletonPrefabManagersList.DoLayoutList();
 
             EditorGUI.indentLevel = 0;
 

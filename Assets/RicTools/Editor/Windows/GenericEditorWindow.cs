@@ -1,3 +1,4 @@
+using RicTools.Editor.EditorAttributes;
 using RicTools.Editor.UIElements;
 using RicTools.Editor.Utilities;
 using RicTools.EditorAttributes;
@@ -84,39 +85,69 @@ namespace RicTools.Editor.Windows
         {
             var fields = typeof(SoType).GetFields();
             var temp = CreateInstance<SoType>();
-            foreach (var field in fields)
+            foreach (var fieldInfo in fields)
             {
-                var attribute = System.Attribute.GetCustomAttribute(field, typeof(EditorVariableAttribute)) as EditorVariableAttribute;
+                var attribute = System.Attribute.GetCustomAttribute(fieldInfo, typeof(EditorVariableAttribute)) as EditorVariableAttribute;
                 if (attribute == null) continue;
-                if (!EditorWindowTypes.HasTypeToVisualElement(field.FieldType))
+
+                var fieldType = fieldInfo.FieldType;
+                if (fieldInfo.FieldType.IsArray)
+                    fieldType = fieldType.BaseType;
+                else if (fieldInfo.FieldType.IsGenericType && fieldInfo.FieldType.GetGenericTypeDefinition() == typeof(List<>))
+                    fieldType = typeof(System.Array);
+
+                if (!EditorWindowTypes.HasTypeToVisualElement(fieldType))
                 {
-                    Debug.LogError($"Type '{field.FieldType}' does not have a visual element type");
+                    Debug.LogError($"Type '{fieldType}' does not have a visual element type");
                     continue;
                 }
-                var visualElementType = EditorWindowTypes.GetVisualElementType(field.FieldType);
-                var label = field.Name;
+                var visualElementType = EditorWindowTypes.GetVisualElementType(fieldType);
+                var label = ObjectNames.NicifyVariableName(fieldInfo.Name);
                 if (!string.IsNullOrEmpty(attribute.Label))
                     label = attribute.Label;
                 var defaultValue = attribute.DefaultValue;
+
+                System.Type innerType = null;
+
                 if (defaultValue == null)
                 {
-                    defaultValue = field.GetValue(temp);
+                    defaultValue = fieldInfo.GetValue(temp);
                     if (defaultValue == null)
                     {
-                        if (field.FieldType.IsEnum)
+                        if (fieldInfo.FieldType.IsEnum)
                         {
-                            defaultValue = field.FieldType.GetEnumValues().GetValue(0);
+                            defaultValue = fieldInfo.FieldType.GetEnumValues().GetValue(0);
                         }
-                        else if (field.FieldType.IsValueType)
+                        else if (fieldInfo.FieldType.IsArray)
                         {
-                            defaultValue = System.Activator.CreateInstance(field.FieldType);
+                            innerType = fieldInfo.FieldType.GetElementType();
+                            if (!innerType.IsSerializable)
+                            {
+                                Debug.LogError($"'{innerType}' is not serializable, cannot make a list in editor");
+                                continue;
+                            }
+                            defaultValue = System.Activator.CreateInstance(typeof(List<>).MakeGenericType(innerType));
+                        }
+                        else if (fieldInfo.FieldType.IsGenericType && fieldInfo.FieldType.GetGenericTypeDefinition() == typeof(List<>))
+                        {
+                            innerType = fieldInfo.FieldType.GetGenericArguments()[0];
+                            if (!innerType.IsSerializable)
+                            {
+                                Debug.LogError($"'{innerType}' is not serializable, cannot make a list in editor");
+                                continue;
+                            }
+                            defaultValue = System.Activator.CreateInstance(typeof(List<>).MakeGenericType(innerType));
+                        }
+                        else if (fieldInfo.FieldType.IsValueType)
+                        {
+                            defaultValue = System.Activator.CreateInstance(fieldInfo.FieldType);
                         }
                     }
                 }
-                var visualElement = visualElementType.CreateVisualElement(label, defaultValue, field.FieldType, attribute.ExtraData);
+                var visualElement = visualElementType.CreateVisualElement(new EditorVariableDrawData(label, defaultValue, fieldInfo.FieldType, attribute.ExtraData, innerType));
                 var variableData = new EditorVariableData();
                 variableData.defaultValue = defaultValue;
-                variableData.fieldName = field.Name;
+                variableData.fieldName = fieldInfo.Name;
                 variableData.visualElementIndex = variableVisualElements.Count;
 
                 variableDatas.Add(variableData);
@@ -431,9 +462,25 @@ namespace RicTools.Editor.Windows
             {
                 if (variableVisualElements.Count < editorVariableData.visualElementIndex) continue;
                 var visualElement = variableVisualElements[editorVariableData.visualElementIndex];
-                var ValueProperty = visualElement.GetType().GetProperty("value");
-                var value = ValueProperty.GetValue(visualElement);
-                asset.GetType().GetField(editorVariableData.fieldName).SetValue(asset, value);
+                var fieldInfo = asset.GetType().GetField(editorVariableData.fieldName);
+
+                var fieldType = fieldInfo.FieldType;
+
+                System.Type innerType = fieldType;
+                if (fieldInfo.FieldType.IsArray)
+                {
+                    innerType = fieldType.GetElementType();
+                    fieldType = fieldType.BaseType;
+                }
+                else if (fieldInfo.FieldType.IsGenericType && fieldInfo.FieldType.GetGenericTypeDefinition() == typeof(List<>))
+                {
+                    innerType = fieldType.GetGenericArguments()[0];
+                    fieldType = typeof(System.Array);
+                }
+
+                var visualElementType = EditorWindowTypes.GetVisualElementType(fieldType);
+                var value = visualElementType.SaveData(visualElement, innerType);
+                fieldInfo.SetValue(asset, value);
             }
 
             SaveAsset(ref asset);
@@ -512,16 +559,22 @@ namespace RicTools.Editor.Windows
             {
                 if (variableVisualElements.Count <= editorVariableData.visualElementIndex) continue;
                 var visualElement = variableVisualElements[editorVariableData.visualElementIndex];
-                var type = visualElement.GetType().GetProperty("value");
-                if (isNull)
-                {
-                    type.SetValue(visualElement, editorVariableData.defaultValue);
-                }
-                else
-                {
-                    var value = asset.GetType().GetField(editorVariableData.fieldName).GetValue(asset);
-                    type.SetValue(visualElement, value);
-                }
+
+                var fieldInfo = typeof(SoType).GetField(editorVariableData.fieldName);
+
+                var fieldType = fieldInfo.FieldType;
+                if (fieldInfo.FieldType.IsArray)
+                    fieldType = fieldType.BaseType;
+                else if (fieldInfo.FieldType.IsGenericType && fieldInfo.FieldType.GetGenericTypeDefinition() == typeof(List<>))
+                    fieldType = typeof(System.Array);
+
+                var visualElementType = EditorWindowTypes.GetVisualElementType(fieldType);
+
+                var value = editorVariableData.defaultValue;
+                if (!isNull)
+                    value = fieldInfo.GetValue(asset);
+
+                visualElementType.LoadData(visualElement, value);
             }
 
             LoadAsset(asset, isNull);

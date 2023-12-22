@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine.UIElements;
 
 namespace RicTools.Editor.EditorAttributes
@@ -8,11 +7,16 @@ namespace RicTools.Editor.EditorAttributes
     {
         public override Type FieldType => typeof(bool);
 
-        public override VisualElement CreateVisualElement(string label, object value, Type fieldType, Dictionary<string, object> extraData)
+        public override VisualElement CreateVisualElement(EditorVariableDrawData editorVariableData)
         {
             var toggle = new Toggle();
-            toggle.label = label;
-            toggle.value = (bool)value;
+            toggle.label = editorVariableData.label;
+            toggle.value = (bool)editorVariableData.value;
+
+            toggle.RegisterValueChangedCallback(callback =>
+            {
+                editorVariableData.onValueChange?.Invoke(callback.newValue);
+            });
 
             return toggle;
         }

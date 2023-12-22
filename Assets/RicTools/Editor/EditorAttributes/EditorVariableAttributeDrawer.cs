@@ -20,6 +20,38 @@ namespace RicTools.Editor.EditorAttributes
             EditorVariableAttributeType = typeof(T);
         }
 
-        public abstract VisualElement CreateVisualElement(string label, object value, Type fieldType, Dictionary<string, object> extraData);
+        public abstract VisualElement CreateVisualElement(EditorVariableDrawData data);
+
+        public virtual object SaveData(VisualElement visualElement, Type fieldType)
+        {
+            var ValueProperty = visualElement.GetType().GetProperty("value");
+            var value = ValueProperty.GetValue(visualElement);
+            return value;
+        }
+
+        public virtual void LoadData(VisualElement visualElement, object data)
+        {
+            var valueProperty = visualElement.GetType().GetProperty("value");
+            valueProperty.SetValue(visualElement, data);
+        }
+    }
+
+    public sealed class EditorVariableDrawData
+    {
+        public readonly string label;
+        public readonly object value;
+        public readonly Type fieldType;
+        public readonly Dictionary<string, object> extraData;
+        public readonly Type innerType;
+        public Action<object> onValueChange;
+
+        public EditorVariableDrawData(string label, object value, Type fieldType, Dictionary<string, object> extraData, Type innerType)
+        {
+            this.label = label;
+            this.value = value;
+            this.fieldType = fieldType;
+            this.extraData = extraData;
+            this.innerType = innerType;
+        }
     }
 }
