@@ -12,7 +12,7 @@ namespace RicTools.Editor.Settings
 
         public static string version
         {
-            get { return "2.0.3"; }
+            get { return "2.0.4"; }
         }
 
         public static RicTools_EditorSettings instance
